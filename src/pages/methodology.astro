@@ -1,0 +1,172 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import SectionTitle from '@/components/ui/SectionTitle.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Todo from '@/components/ui/Todo.astro';
+import {
+  pipelineInput,
+  pipelineOutput,
+  pipelineSteps,
+  models,
+  datasets,
+  metrics,
+  knownFacts,
+  responsiblePrinciples,
+} from '@/data/methodology';
+
+const nodes = [
+  { ...pipelineInput, kind: 'io' as const, tech: undefined },
+  ...pipelineSteps.map((s) => ({ ...s, icon: s.icon ?? 'cpu', kind: 'step' as const })),
+  { ...pipelineOutput, kind: 'io' as const, tech: undefined },
+];
+---
+<BaseLayout title="AI & Methodology" description="How The Knowledge Revolution works: from a student's question to a talking 3D avatar — pipeline, models, datasets and metrics.">
+  <PageHeader
+    eyebrow="AI & methodology"
+    title="From a question"
+    accent="to a face-to-face answer."
+    lead="A deep learning, multimodal, generative AI system. The technical pipeline is being designed during the Investigate phase — this page grows with it."
+  />
+
+  <!-- What we know -->
+  <section class="container-page pb-24">
+    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {knownFacts.map((f) => (
+        <li class="glass p-6" data-reveal data-tilt>
+          <Icon name={f.icon} class="mb-4 size-7 text-cyan" />
+          <h2 class="font-display text-xl text-ink">{f.title}</h2>
+          <p class="mt-2 text-sm text-mist">{f.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Pipeline -->
+  <section class="border-y border-white/6 bg-night/40 py-24 md:py-32">
+    <div class="container-page">
+      <SectionTitle eyebrow="The pipeline" title="Step by step," accent="how an avatar answers." center />
+
+      <ol id="pipeline" class="relative mx-auto max-w-3xl">
+        <div class="absolute top-8 bottom-8 left-8 w-px bg-white/10 md:left-1/2" aria-hidden="true">
+          <div data-draw class="absolute inset-0 origin-top bg-gradient-to-b from-cyan via-gold to-cyan shadow-[0_0_12px_rgb(92_225_230/0.8)]"></div>
+        </div>
+
+        {nodes.map((n, i) => (
+          <Fragment>
+            <li class="pipe-step relative mb-10 grid grid-cols-[4rem_1fr] items-center gap-5 md:grid-cols-[1fr_4rem_1fr]" data-pipe-step>
+              <span class:list={['pipe-dot relative z-10 flex size-16 items-center justify-center rounded-2xl border bg-navy md:col-start-2', n.kind === 'io' ? 'border-gold/60 text-gold' : 'border-cyan/50 text-cyan']}>
+                <Icon name={n.icon} class="size-7" />
+              </span>
+              <div class:list={['glass p-5 md:row-start-1', i % 2 ? 'md:col-start-3' : 'md:col-start-1 md:text-right']}>
+                <p class="font-label text-[0.68rem] font-semibold tracking-[0.2em] text-mist uppercase">
+                  {i === 0 ? 'Input' : i === nodes.length - 1 ? 'Output' : `Step ${i}`}
+                </p>
+                <h3 class="mt-1 font-display text-xl text-ink">{n.title}</h3>
+                <p class="mt-1 text-sm text-mist">{n.text}</p>
+                {n.tech && <p class="mt-2 font-label text-xs text-cyan">{n.tech}</p>}
+              </div>
+            </li>
+
+            {i === 0 && pipelineSteps.length === 0 && (
+              <li class="pipe-step relative mb-10 grid grid-cols-[4rem_1fr] items-center gap-5 md:grid-cols-[1fr_4rem_1fr]" data-pipe-step>
+                <span class="pipe-dot relative z-10 flex size-16 items-center justify-center rounded-2xl border border-dashed border-gold/60 bg-navy text-gold md:col-start-2">
+                  <Icon name="hourglass" class="size-7" />
+                </span>
+                <div class="rounded-3xl border border-dashed border-gold/50 bg-gold/5 p-5 md:col-start-3 md:row-start-1">
+                  <p class="font-label text-[0.68rem] font-semibold tracking-[0.2em] text-gold uppercase">Under investigation</p>
+                  <h3 class="mt-1 font-display text-xl text-ink">The processing steps</h3>
+                  <p class="mt-1 text-sm text-mist">Everything that happens between the question and the avatar's answer is being designed now, during the Investigate phase.</p>
+                  <div class="mt-3"><Todo>Pipeline steps — src/data/methodology.ts</Todo></div>
+                </div>
+              </li>
+            )}
+          </Fragment>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Models / datasets / metrics -->
+  <section class="container-page py-24 md:py-32">
+    <SectionTitle eyebrow="Under the hood" title="Models, datasets" accent="& metrics." />
+    <div class="grid gap-6 lg:grid-cols-3">
+      <div class="glass p-7" data-reveal>
+        <h3 class="mb-5 flex items-center gap-3 font-display text-2xl"><Icon name="brain" class="size-6 text-cyan" /> Models</h3>
+        {models.length ? (
+          <ul class="divide-y divide-white/8">
+            {models.map((m) => (
+              <li class="py-3"><p class="font-semibold text-ink">{m.name}</p><p class="text-sm text-mist">{m.role}{m.why && ` — ${m.why}`}</p></li>
+            ))}
+          </ul>
+        ) : <Todo>Models chosen during Investigate</Todo>}
+      </div>
+      <div class="glass p-7" data-reveal>
+        <h3 class="mb-5 flex items-center gap-3 font-display text-2xl"><Icon name="layers" class="size-6 text-cyan" /> Datasets</h3>
+        {datasets.length ? (
+          <ul class="divide-y divide-white/8">
+            {datasets.map((d) => (
+              <li class="py-3">
+                <p class="font-semibold text-ink">{d.link ? <a href={d.link} target="_blank" rel="noopener" class="underline decoration-cyan/40 hover:decoration-cyan">{d.name}</a> : d.name}</p>
+                <p class="text-sm text-mist">{d.content}{d.size && ` · ${d.size}`}</p>
+              </li>
+            ))}
+          </ul>
+        ) : <Todo>Datasets used</Todo>}
+      </div>
+      <div class="glass p-7" data-reveal>
+        <h3 class="mb-5 flex items-center gap-3 font-display text-2xl"><Icon name="target" class="size-6 text-cyan" /> Metrics</h3>
+        {metrics.length ? (
+          <ul class="divide-y divide-white/8">
+            {metrics.map((m) => (
+              <li class="py-3">
+                <p class="font-semibold text-ink">{m.name}</p>
+                <p class="text-sm text-mist">{m.measures}</p>
+                {(m.target || m.result) && <p class="mt-1 font-label text-xs text-gold">{m.target && `Target ${m.target}`}{m.target && m.result && ' · '}{m.result && `Result ${m.result}`}</p>}
+              </li>
+            ))}
+          </ul>
+        ) : <Todo>Evaluation metrics</Todo>}
+      </div>
+    </div>
+  </section>
+
+  <!-- Responsible AI -->
+  <section class="on-cream py-24 md:py-32">
+    <div class="container-page">
+      <SectionTitle eyebrow="Responsible AI" title="Transparent" accent="by design." lead="Principles set during the Engage phase, which every technical choice will follow." />
+      <ul class="grid gap-6 md:grid-cols-3">
+        {responsiblePrinciples.map((p) => (
+          <li class="rounded-3xl border border-navy/12 bg-white/55 p-7" data-reveal data-tilt="6">
+            <span class="mb-5 flex size-12 items-center justify-center rounded-full bg-navy text-ink"><Icon name={p.icon} class="size-5" /></span>
+            <h3 class="font-display text-2xl text-navy">{p.title}</h3>
+            <p class="mt-2 text-navy/75">{p.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pipe-dot { transition: box-shadow 0.6s, transform 0.6s var(--ease-out-expo); }
+  .pipe-step.is-lit .pipe-dot {
+    box-shadow: 0 0 0 6px rgb(92 225 230 / 0.12), 0 0 40px rgb(92 225 230 / 0.55);
+    transform: scale(1.06);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .pipe-step:not(.is-lit) .glass,
+    .js .pipe-step:not(.is-lit) > div { opacity: 0.35; transform: translateY(12px); }
+    .pipe-step .glass, .pipe-step > div { transition: opacity 0.7s, transform 0.7s var(--ease-out-expo); }
+  }
+</style>
+
+<script>
+  // Light each pipeline step as it reaches the middle of the screen
+  const steps = document.querySelectorAll<HTMLElement>('[data-pipe-step]');
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('is-lit')),
+    { rootMargin: '0px 0px -35% 0px' },
+  );
+  steps.forEach((s) => io.observe(s));
+</script>

@@ -1,0 +1,12 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+---
+<BaseLayout title="Page not found">
+  <section class="container-page flex min-h-[80vh] flex-col items-center justify-center pt-24 text-center">
+    <p class="font-label text-8xl font-extrabold text-white/10">404</p>
+    <h1 class="title-serif mt-4 text-4xl md:text-6xl">“Is anyone <em>there?</em>”</h1>
+    <p class="lead mt-5 max-w-md">This page does not exist — but the greatest minds are still waiting for you.</p>
+    <a href="/" class="btn-gold mt-8"><Icon name="arrow-left" class="size-4" /> Back home</a>
+  </section>
+</BaseLayout>

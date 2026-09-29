@@ -1,0 +1,45 @@
+---
+import { cblPhases } from '@/data/site';
+import Icon from './Icon.astro';
+interface Props { class?: string; compact?: boolean }
+const { class: cls, compact = false } = Astro.props;
+const statusText = { done: 'Completed', current: 'In progress', upcoming: 'Upcoming' };
+---
+<ol class:list={['flex flex-col gap-3 sm:flex-row sm:items-center', cls]} aria-label="CBL progress">
+  {cblPhases.map((p, i) => (
+    <li class="flex flex-1 items-center gap-3">
+      <div
+        class:list={[
+          'flex flex-1 items-center gap-3 rounded-full border py-2 pr-5 pl-2',
+          p.status === 'done' && 'border-gold/50 bg-gold/12',
+          p.status === 'current' && 'border-cyan/60 bg-cyan/10 shadow-[0_0_30px_-8px_rgb(92_225_230/0.6)]',
+          p.status === 'upcoming' && 'border-white/10 bg-white/4',
+        ]}
+        aria-current={p.status === 'current' ? 'step' : undefined}
+      >
+        <span
+          class:list={[
+            'flex size-9 shrink-0 items-center justify-center rounded-full font-label text-sm font-bold',
+            p.status === 'done' && 'bg-gold text-navy',
+            p.status === 'current' && 'bg-cyan text-navy',
+            p.status === 'upcoming' && 'border border-white/20 text-mist',
+          ]}
+        >
+          {p.status === 'done' ? <Icon name="check" class="size-4" strokeWidth={2.5} /> : i + 1}
+        </span>
+        <span class="leading-tight">
+          <span class="block font-label text-sm font-bold tracking-wider uppercase">{p.label}</span>
+          {!compact && <span class:list={['block text-xs', p.status === 'current' ? 'text-cyan' : 'text-mist']}>{statusText[p.status]}</span>}
+          {compact && <span class="sr-only">— {statusText[p.status]}</span>}
+        </span>
+        {p.status === 'current' && (
+          <span class="relative ml-auto flex size-2.5" aria-hidden="true">
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-cyan opacity-60 motion-reduce:animate-none"></span>
+            <span class="relative inline-flex size-2.5 rounded-full bg-cyan"></span>
+          </span>
+        )}
+      </div>
+      {i < cblPhases.length - 1 && <span aria-hidden="true" class="hidden text-navy-400 sm:block"><Icon name="arrow-right" class="size-5" /></span>}
+    </li>
+  ))}
+</ol>

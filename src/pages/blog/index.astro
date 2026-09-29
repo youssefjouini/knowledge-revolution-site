@@ -1,0 +1,46 @@
+---
+import { getImage } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import BlogExplorer, { type PostSummary } from '@/components/features/BlogExplorer';
+import { blogCategories } from '@/content.config';
+import { formatDate, readingTime } from '@/lib/utils';
+
+const entries = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const posts: PostSummary[] = await Promise.all(
+  entries.map(async (e) => {
+    const cover = e.data.cover
+      ? await getImage({ src: e.data.cover, widths: [400, 720], width: 720 })
+      : null;
+    return {
+      id: e.id,
+      title: e.data.title,
+      date: e.data.date.toISOString(),
+      dateLabel: formatDate(e.data.date),
+      category: e.data.category,
+      tags: e.data.tags,
+      excerpt: e.data.excerpt,
+      readingTime: readingTime(e.body),
+      cover: cover
+        ? { src: cover.src, srcSet: cover.srcSet.attribute, width: Number(cover.attributes.width), height: Number(cover.attributes.height) }
+        : null,
+      coverAlt: e.data.coverAlt ?? '',
+    };
+  }),
+);
+---
+<BaseLayout title="Progress Blog" description="The progress blog of The Knowledge Revolution: the project, the story of learning, the team behind the scenes and our CBL journey.">
+  <PageHeader
+    eyebrow="Progress blog"
+    title="Our journey,"
+    accent="post by post."
+    lead="The project, the story of how humanity learned to learn, our community, and what happens behind the scenes — week by week."
+  />
+  <section class="container-page pb-24 md:pb-32">
+    <BlogExplorer client:visible posts={posts} categories={[...blogCategories]} />
+  </section>
+</BaseLayout>

@@ -1,0 +1,16 @@
+---
+import { promises } from '@/data/site';
+import Icon from './Icon.astro';
+---
+<ul class="grid gap-10 md:grid-cols-3 md:gap-6">
+  {promises.map((p) => (
+    <li class="relative rounded-3xl border border-navy/12 bg-white/55 px-7 pt-12 pb-8 shadow-[0_20px_40px_-28px_rgb(16_27_64/0.5)]" data-reveal data-tilt="6">
+      <span class="absolute -top-6 left-7 flex size-12 items-center justify-center rounded-full bg-navy text-ink ring-4 ring-cream">
+        <Icon name={p.icon} class="size-5" />
+      </span>
+      <p class="font-quote text-xl leading-relaxed text-navy md:text-2xl">
+        {p.lead} <strong class="font-semibold">{p.strong}</strong>{p.tail ? ` ${p.tail}` : ''}
+      </p>
+    </li>
+  ))}
+</ul>

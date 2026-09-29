@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import { nav, site, footerNote } from '@/data/site';
+import Icon from '@/components/ui/Icon.astro';
+import logo from '@/assets/images/logos/fbais-logo-LOWRES-placeholder.png';
+import esprit from '@/assets/images/logos/esprit-white.png';
+import iu from '@/assets/images/logos/iu-emblem-cropped.png';
+---
+<footer class="relative mt-24 border-t border-white/8 bg-night/70">
+  <div class="glow-line absolute inset-x-0 top-0"></div>
+  <div class="container-page grid gap-12 py-16 md:grid-cols-12">
+    <div class="md:col-span-4">
+      <a href="/" class="flex items-center gap-3">
+        <Image src={logo} alt={`${site.team} logo`} width={48} height={48} class="size-12 rounded-full ring-1 ring-gold/50" />
+        <span class="font-display text-xl">The Knowledge <em class="text-gold">Revolution</em></span>
+      </a>
+      <p class="mt-4 max-w-sm text-sm leading-relaxed text-mist">
+        {site.team} — {site.teamLong}. {site.tagline}
+      </p>
+      <div class="mt-6 flex items-center gap-2">
+        <a href={site.instagram.url} target="_blank" rel="noopener" class="rounded-full border border-white/10 p-2.5 text-mist transition hover:border-cyan/50 hover:text-cyan" aria-label={`Instagram ${site.instagram.handle} (opens in a new tab)`}>
+          <Icon name="instagram" class="size-4" />
+        </a>
+        {site.email && (
+          <a href={`mailto:${site.email}`} class="rounded-full border border-white/10 p-2.5 text-mist transition hover:border-cyan/50 hover:text-cyan" aria-label={`Email ${site.email}`}>
+            <Icon name="mail" class="size-4" />
+          </a>
+        )}
+      </div>
+    </div>
+
+    <nav aria-label="Footer" class="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-8">
+      {nav.map((item) => (
+        <div>
+          <p class="eyebrow !text-gold/90 mb-3">{item.label}</p>
+          <ul class="space-y-2 text-sm">
+            {('children' in item ? item.children : [item]).map((l) => (
+              <li><a href={l.href} class="link-underline text-mist hover:text-ink">{l.label === 'Home' ? 'Home page' : l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  </div>
+
+  <div class="border-t border-white/6">
+    <div class="container-page flex flex-col items-center justify-between gap-6 py-8 md:flex-row">
+      <p class="text-center text-xs leading-relaxed text-mist md:text-left">{footerNote}</p>
+      <div class="flex items-center gap-6 opacity-80">
+        <Image src={esprit} alt="ESPRIT — Honoris United Universities" width={120} class="h-8 w-auto" />
+        <Image src={iu} alt="Indiana University (potential partner)" width={80} class="h-9 w-auto" />
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,176 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import SectionTitle from '@/components/ui/SectionTitle.astro';
+import CblProgress from '@/components/ui/CblProgress.astro';
+import Promises from '@/components/ui/Promises.astro';
+import VideoEmbed from '@/components/ui/VideoEmbed.astro';
+import Gallery from '@/components/ui/Gallery.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Todo from '@/components/ui/Todo.astro';
+import AvatarViewer from '@/components/three/AvatarViewer';
+import { site } from '@/data/site';
+import { metrics } from '@/data/methodology';
+import { hasAvatar, AVATAR_SRC } from '@/lib/avatar';
+
+import ctaThumb from '@/assets/images/demo/call-to-action-video-thumbnail.jpg';
+import instaDesktop from '@/assets/images/social-media/instagram-desktop.jpg';
+import instaFeed from '@/assets/images/social-media/instagram-feed-phone.jpg';
+import instaProfile from '@/assets/images/social-media/instagram-profile-phone.jpg';
+import groupPhoto from '@/assets/images/team/team-group-photo.jpg';
+
+/** Facts about the project so far — counted from our own work, not results of the AI. */
+const keyFigures = [
+  { value: 6, label: 'team members' },
+  { value: 1, suffix: ' / 3', label: 'CBL phases completed' },
+  { value: 27, label: 'slides in the Engage presentation' },
+  { value: 4, label: 'content pillars on Instagram' },
+  { value: 4, label: 'Sustainable Development Goals targeted' },
+];
+
+const gallery = [
+  { img: instaDesktop, alt: 'Screenshot of the @fbais.esprit Instagram profile on desktop.', caption: 'Instagram launch — profile' },
+  { img: instaFeed, alt: 'Screenshot of the @fbais.esprit Instagram feed on a phone.', caption: 'Instagram — feed' },
+  { img: instaProfile, alt: 'Screenshot of the @fbais.esprit Instagram profile on a phone.', caption: 'Instagram — mobile profile' },
+  { img: groupPhoto, alt: 'Black and white group photo of the six FBAI\'s team members.', caption: 'The team' },
+];
+---
+<BaseLayout title="Results & Demo" description="Demo videos, the interactive 3D avatar, audio excerpts and the results of The Knowledge Revolution project.">
+  <PageHeader
+    eyebrow="Results & demo"
+    title="The avatars,"
+    accent="coming to life."
+    lead="The demo and results arrive with the Investigate and Act phases. Here is where we are — and what the Engage phase already produced."
+  />
+
+  <!-- Status -->
+  <section class="container-page pb-24">
+    <div class="glass p-8 md:p-12" data-reveal>
+      <div class="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <span class="chip !border-cyan/40 !text-cyan">
+            <span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-cyan opacity-60 motion-reduce:animate-none"></span><span class="relative size-2 rounded-full bg-cyan"></span></span>
+            Coming soon
+          </span>
+          <h2 class="title-serif mt-4 text-3xl md:text-4xl">The demo is being <em>built.</em></h2>
+        </div>
+        <p class="max-w-md text-mist">Results will be published here as soon as the first avatar speaks.</p>
+      </div>
+      <CblProgress />
+    </div>
+  </section>
+
+  <!-- Videos -->
+  <section class="container-page pb-24 md:pb-32">
+    <SectionTitle eyebrow="Videos" title="Watch" accent="the project." />
+    <div class="grid gap-8 lg:grid-cols-2">
+      <div data-reveal>
+        {site.ctaVideoUrl ? (
+          <VideoEmbed url={site.ctaVideoUrl} poster={ctaThumb} title="Call-to-action video — Engage phase" />
+        ) : (
+          <div class="relative aspect-video overflow-hidden rounded-3xl border border-white/10">
+            <Image src={ctaThumb} alt="Thumbnail of our call-to-action video." widths={[640, 1280]} sizes="(min-width: 1024px) 600px, 100vw" class="size-full object-cover opacity-60" />
+            <div class="absolute inset-0 flex items-center justify-center bg-navy/40"><Todo>Video link — site.ctaVideoUrl</Todo></div>
+          </div>
+        )}
+        <h3 class="mt-4 font-display text-2xl">Call-to-action video</h3>
+        <p class="text-sm text-mist">Engage phase</p>
+      </div>
+      <div data-reveal>
+        {site.demoVideoUrl ? (
+          <VideoEmbed url={site.demoVideoUrl} poster={ctaThumb} title="Avatar demo video" />
+        ) : (
+          <div class="flex aspect-video flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-white/15 bg-white/3 text-center">
+            <Icon name="play" class="size-10 text-cyan/60" />
+            <Todo>Avatar demo video — site.demoVideoUrl</Todo>
+          </div>
+        )}
+        <h3 class="mt-4 font-display text-2xl">Avatar demo</h3>
+        <p class="text-sm text-mist">Act phase</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3D avatar + audio -->
+  <section class="border-y border-white/6 bg-night/40 py-24 md:py-32">
+    <div class="container-page grid gap-10 lg:grid-cols-[1.3fr_1fr]">
+      <div>
+        <p class="eyebrow mb-4" data-reveal>Interactive 3D avatar</p>
+        <div class="glass relative aspect-[4/3] overflow-hidden" data-reveal>
+          {hasAvatar ? (
+            <AvatarViewer client:visible src={AVATAR_SRC} />
+          ) : (
+            <div class="flex size-full flex-col items-center justify-center gap-5 p-8 text-center">
+              <span class="flex size-20 items-center justify-center rounded-3xl border border-cyan/30 bg-cyan/10 text-cyan"><Icon name="cube" class="size-10" /></span>
+              <p class="max-w-sm text-mist">The first avatar will appear here in 3D — drag to rotate it, scroll to zoom.</p>
+              <Todo>Avatar model — public/models/avatar.glb</Todo>
+            </div>
+          )}
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow mb-4" data-reveal>Hear the avatars</p>
+        <div class="glass p-6" data-reveal>
+          <p class="mb-5 flex items-center gap-2 text-sm text-mist"><Icon name="info" class="size-4 shrink-0 text-cyan" /> AI-generated voices. Nothing plays until you press play.</p>
+          {site.audioClips.length ? (
+            <ul class="space-y-5">
+              {site.audioClips.map((c) => (
+                <li>
+                  <p class="mb-2 flex items-center gap-2 font-label text-sm font-semibold"><Icon name="volume" class="size-4 text-gold" /> {c.title}</p>
+                  <audio controls preload="none" src={c.src} class="w-full">
+                    <a href={c.src}>Download the audio</a>
+                  </audio>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div class="flex flex-col items-start gap-4">
+              <div class="wave-bars flex h-10 items-center gap-1" aria-hidden="true">
+                {Array.from({ length: 24 }).map((_, i) => <span style={`height:${25 + ((i * 41) % 75)}%;animation-delay:-${(i * 0.11).toFixed(2)}s`}></span>)}
+              </div>
+              <Todo>Audio excerpts — site.audioClips</Todo>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key figures -->
+  <section class="container-page py-24 md:py-32">
+    <SectionTitle eyebrow="Key figures" title="The project" accent="so far." />
+    <ul class="grid grid-cols-2 gap-4 md:grid-cols-5">
+      {keyFigures.map((k) => (
+        <li class="stat-card pt-12" data-reveal>
+          <p class="font-label text-5xl font-extrabold text-gold"><span data-count={k.value}>{k.value}</span>{k.suffix}</p>
+          <p class="mt-3 text-sm text-ink/85">{k.label}</p>
+        </li>
+      ))}
+    </ul>
+    <div class="glass mt-8 p-7" data-reveal>
+      <h3 class="mb-4 flex items-center gap-3 font-display text-2xl"><Icon name="target" class="size-6 text-cyan" /> Avatar results & metrics</h3>
+      {metrics.some((m) => m.result) ? (
+        <ul class="grid gap-4 md:grid-cols-3">
+          {metrics.filter((m) => m.result).map((m) => (
+            <li class="rounded-2xl bg-white/4 p-5"><p class="font-label text-3xl font-extrabold text-cyan">{m.result}</p><p class="mt-1 text-sm text-mist">{m.name}</p></li>
+          ))}
+        </ul>
+      ) : <Todo>Measured results (Act phase) — src/data/methodology.ts</Todo>}
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="container-page pb-24 md:pb-32">
+    <SectionTitle eyebrow="Gallery" title="Engage phase," accent="in pictures." lead="Our social media launch and the team. Avatar screenshots will be added here." />
+    <Gallery items={gallery} />
+  </section>
+
+  <!-- Promises -->
+  <section class="on-cream py-24 md:py-32">
+    <div class="container-page">
+      <SectionTitle eyebrow="What we are building towards" title="Three promises," accent="one demo." />
+      <Promises />
+    </div>
+  </section>
+</BaseLayout>

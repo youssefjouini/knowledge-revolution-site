@@ -1,0 +1,168 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import SectionTitle from '@/components/ui/SectionTitle.astro';
+import StatCard from '@/components/ui/StatCard.astro';
+import Todo from '@/components/ui/Todo.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { needStats, opportunityStats, riskStats, marketChart } from '@/data/site';
+
+import bigIdea from '@/assets/images/engage/big-idea-knowledge-revolution.png';
+import needBg from '@/assets/images/backgrounds/the-need-bg-photo.jpg';
+import oppBg from '@/assets/images/backgrounds/the-opportunity-bg-photo.jpg';
+import riskBg from '@/assets/images/backgrounds/the-risk-bg-photo.jpg';
+import sdg4 from '@/assets/images/sdgs/sdg-04-quality-education.png';
+import sdg9 from '@/assets/images/sdgs/sdg-09-industry-innovation.png';
+import sdg10 from '@/assets/images/sdgs/sdg-10-reduced-inequalities.png';
+import sdg17 from '@/assets/images/sdgs/sdg-17-partnerships.png';
+import sdgWheel from '@/assets/images/sdgs/sdg-wheel.png';
+
+/**
+ * [TODO] One sentence per SDG explaining the link with the project.
+ * Replace `null` by the sentence, e.g. link: 'Our avatars ...'
+ */
+const sdgs = [
+  { img: sdg4, n: 4, name: 'Quality Education', main: true, link: null as string | null },
+  { img: sdg9, n: 9, name: 'Industry, Innovation and Infrastructure', link: null as string | null },
+  { img: sdg10, n: 10, name: 'Reduced Inequalities', link: null as string | null },
+  { img: sdg17, n: 17, name: 'Partnerships for the Goals', link: null as string | null },
+];
+
+const maxMarket = Math.max(...marketChart.map((d) => d.value));
+---
+<BaseLayout title="Theme & Motivation" description="The Knowledge Revolution: why education must become an experience — the need, the opportunity, the risk, and our link with SDG 4 Quality Education.">
+  <PageHeader
+    eyebrow="Theme & motivation"
+    title="The Knowledge"
+    accent="Revolution."
+    lead="Humanity has gone through several revolutions in how it shares knowledge. The next one is about bringing the best teachers and minds to every learner, personally."
+  />
+
+  <!-- Big idea -->
+  <section class="container-page pb-24 md:pb-32">
+    <div class="grid items-center gap-12 lg:grid-cols-2">
+      <div>
+        <h2 class="title-caps text-4xl md:text-6xl" data-reveal>The <span class="pill">Big Idea</span></h2>
+        <div class="mt-8 flex items-center gap-5 rounded-[2rem] border border-white/10 bg-white/5 p-6 md:p-8" data-reveal>
+          <Icon name="bulb" class="size-12 shrink-0 text-gold" />
+          <span class="h-16 w-px bg-white/15"></span>
+          <p class="font-label text-3xl leading-tight md:text-4xl"><span class="font-light">Knowledge</span><br /><strong class="font-extrabold uppercase">Revolution</strong></p>
+        </div>
+        <p class="lead mt-8" data-reveal>
+          Why education must become an <em class="font-display text-gold">experience</em>: students attend, rewatch and email — and still stay lost. Knowledge exists; what is missing is a teacher who is there when the student needs one, who answers without judgment, and who explains in a way that fits them.
+        </p>
+      </div>
+      <div class="relative mx-auto w-full max-w-lg" data-reveal>
+        <div class="absolute inset-0 rounded-full bg-cyan/25 blur-3xl"></div>
+        <Image src={bigIdea} alt="A glowing globe rising from an open book, surrounded by icons of learning, language and AI." widths={[400, 640, 900]} sizes="(min-width: 1024px) 512px, 90vw" class="relative aspect-square w-full rounded-full object-cover ring-1 ring-cyan/30" />
+      </div>
+    </div>
+  </section>
+
+  <!-- The need -->
+  <section class="relative isolate overflow-hidden py-24 md:py-32">
+    <Image src={needBg} alt="" widths={[640, 953]} sizes="100vw" class="absolute inset-0 -z-20 size-full object-cover opacity-40" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-navy-950 via-navy-950/70 to-navy-950"></div>
+    <div class="container-page">
+      <h2 class="title-caps mb-12 text-5xl md:text-7xl" data-reveal><span class="pill">The</span><br />Need</h2>
+      <div class="grid gap-5 md:grid-cols-3">
+        {needStats.map((s) => <StatCard stat={s} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- The opportunity -->
+  <section class="relative isolate overflow-hidden py-24 md:py-32">
+    <Image src={oppBg} alt="" widths={[640, 953]} sizes="100vw" class="absolute inset-0 -z-20 size-full object-cover opacity-35" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-navy-950 via-navy-950/75 to-navy-950"></div>
+    <div class="container-page grid items-end gap-12 lg:grid-cols-[1fr_1.1fr]">
+      <div>
+        <h2 class="title-caps mb-10 text-5xl md:text-7xl" data-reveal><span class="pill">The</span><br />Opportunity</h2>
+        <!-- Market chart (slide 9) -->
+        <figure class="glass p-6 md:p-8" data-reveal>
+          <figcaption class="mb-6 font-label text-sm font-semibold text-ink">AI in education market <span class="text-mist">(US$ billions)</span></figcaption>
+          <div class="flex h-64 items-end gap-6 border-b border-l border-cyan/30 pl-4" role="img" aria-label="AI in education market: $8.3B in 2025, $11.4B in 2026, $57.2B in 2033.">
+            {marketChart.map((d, i) => (
+              <div class="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                <span class:list={['font-label text-lg font-bold', i === marketChart.length - 1 ? 'text-gold' : 'text-cyan']}>${d.value}B</span>
+                <div
+                  data-grow
+                  class:list={[
+                    'w-full max-w-24 origin-bottom rounded-t-lg border',
+                    i === marketChart.length - 1 ? 'border-gold/80 bg-gold/25 shadow-[0_0_30px_rgb(232_169_58/0.35)]' : 'border-cyan/80 bg-cyan/20 shadow-[0_0_30px_rgb(92_225_230/0.3)]',
+                  ]}
+                  style={`height:${(d.value / maxMarket) * 80}%`}
+                ></div>
+              </div>
+            ))}
+          </div>
+          <div class="mt-3 flex gap-6 pl-4 font-label text-xs text-mist">
+            {marketChart.map((d) => <span class="flex-1 text-center">{d.year}</span>)}
+          </div>
+          <p class="mt-5 font-label text-[0.68rem] tracking-[0.14em] text-mist uppercase">Source · Grand View Research</p>
+        </figure>
+      </div>
+      <div class="grid gap-4">
+        {opportunityStats.map((s) => <StatCard stat={s} variant="row" />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- The risk -->
+  <section id="risk" class="relative isolate scroll-mt-20 overflow-hidden py-24 md:py-32">
+    <Image src={riskBg} alt="" widths={[640, 953]} sizes="100vw" class="absolute inset-0 -z-20 size-full object-cover opacity-35" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-navy-950 via-navy-950/75 to-navy-950"></div>
+    <div class="container-page grid items-end gap-12 lg:grid-cols-[1fr_1.1fr]">
+      <div>
+        <h2 class="title-caps mb-10 text-5xl md:text-6xl" data-reveal><span class="pill">The risk,</span><br />our difference</h2>
+        <figure class="glass p-6 md:p-8" data-reveal>
+          <figcaption class="mb-6 font-label text-sm font-semibold text-ink">People who use AI vs. people who trust it</figcaption>
+          <div class="flex h-64 items-end justify-center gap-10 border-b border-cyan/30" role="img" aria-label="66% of people use AI, but only 46% trust it.">
+            <div class="flex h-full w-28 flex-col items-center justify-end gap-2">
+              <span class="font-label text-2xl font-bold text-cyan">66%</span>
+              <div data-grow class="w-full origin-bottom rounded-t-lg border border-cyan/80 bg-cyan/20 shadow-[0_0_30px_rgb(92_225_230/0.3)]" style="height:66%"></div>
+            </div>
+            <div class="flex h-full w-28 flex-col items-center justify-end gap-2">
+              <span class="font-label text-2xl font-bold text-gold">46%</span>
+              <div data-grow class="w-full origin-bottom rounded-t-lg border border-gold/80 bg-gold/25 shadow-[0_0_30px_rgb(232_169_58/0.35)]" style="height:46%"></div>
+            </div>
+          </div>
+          <div class="mt-3 flex justify-center gap-10 font-label text-sm">
+            <span class="w-28 text-center text-cyan">Use AI</span>
+            <span class="w-28 text-center text-gold">Trust AI</span>
+          </div>
+          <p class="mt-5 font-label text-[0.68rem] tracking-[0.14em] text-mist uppercase">Source · KPMG / University of Melbourne 2025</p>
+        </figure>
+      </div>
+      <div class="grid gap-4">
+        {riskStats.map((s) => <StatCard stat={s} variant="row" />)}
+        <div class="glass flex gap-4 p-6" data-reveal>
+          <Icon name="shield" class="size-8 shrink-0 text-cyan" />
+          <p class="text-ink"><strong>Our difference:</strong> a responsible project that is transparent about AI-generated avatars and voices.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SDGs -->
+  <section class="on-cream py-24 md:py-32">
+    <div class="container-page">
+      <div class="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+        <SectionTitle eyebrow="Sustainable Development Goals" title="Aligned with" accent="SDG 4 — Quality Education." lead="Our main goal is SDG 4. The project also contributes to three other goals of the 2030 Agenda." class="!mb-0" />
+        <Image src={sdgWheel} alt="The SDG colour wheel" width={160} class="hidden size-40 lg:block" data-reveal />
+      </div>
+      <ul class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {sdgs.map((g) => (
+          <li class:list={['relative flex flex-col rounded-3xl border bg-white/60 p-5', g.main ? 'border-gold-deep/60 ring-2 ring-gold/50' : 'border-navy/12']} data-reveal data-tilt="6">
+            {g.main && <span class="absolute -top-3 right-5 rounded-full bg-navy px-3 py-1 font-label text-[0.65rem] font-bold tracking-widest text-gold uppercase">Main goal</span>}
+            <Image src={g.img} alt={`SDG ${g.n} icon`} width={220} class="aspect-square w-full rounded-2xl object-cover" />
+            <p class="mt-4 font-label text-xs font-bold tracking-widest text-gold-deep uppercase">SDG {g.n}</p>
+            <h3 class="font-display text-xl text-navy">{g.name}</h3>
+            <div class="mt-3 text-sm text-navy/80">{g.link ? <p>{g.link}</p> : <Todo>One sentence on how the project serves this goal</Todo>}</div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

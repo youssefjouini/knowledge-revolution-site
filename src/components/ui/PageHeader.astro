@@ -1,0 +1,29 @@
+---
+import { Image } from 'astro:assets';
+interface Props {
+  eyebrow: string;
+  title: string;        // plain part of the title
+  accent?: string;      // gold italic part
+  lead?: string;
+  bg?: ImageMetadata;   // optional cinematic background
+  bgAlt?: string;
+}
+const { eyebrow, title, accent, lead, bg, bgAlt = '' } = Astro.props;
+---
+<section class="relative isolate overflow-hidden pt-36 pb-16 md:pt-44 md:pb-24">
+  {bg && (
+    <Fragment>
+      <Image src={bg} alt={bgAlt} widths={[640, 1024, 1672]} sizes="100vw" class="absolute inset-0 -z-20 size-full object-cover opacity-35" loading="eager" fetchpriority="high" />
+      <div class="absolute inset-0 -z-10 bg-gradient-to-b from-navy/70 via-navy-950/85 to-navy-950"></div>
+    </Fragment>
+  )}
+  <div class="pointer-events-none absolute -top-40 left-1/2 -z-10 h-80 w-[48rem] -translate-x-1/2 rounded-full bg-cyan/10 blur-3xl"></div>
+  <div class="container-page">
+    <p class="eyebrow mb-5" data-reveal>{eyebrow}</p>
+    <h1 class="title-serif max-w-4xl text-5xl sm:text-6xl md:text-7xl" data-reveal>
+      {title}{accent && <Fragment>{' '}<em>{accent}</em></Fragment>}
+    </h1>
+    {lead && <p class="lead mt-6 max-w-2xl" data-reveal>{lead}</p>}
+    <slot />
+  </div>
+</section>

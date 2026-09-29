@@ -1,0 +1,67 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import SectionTitle from '@/components/ui/SectionTitle.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Todo from '@/components/ui/Todo.astro';
+import { site } from '@/data/site';
+import group from '@/assets/images/team/team-group-photo.jpg';
+
+const members = (await getCollection('team')).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout title="Team" description="Meet FBAI's — Future Builders of AI: six students from ESPRIT behind The Knowledge Revolution.">
+  <PageHeader eyebrow={`${site.team} — ${site.teamLong}`} title="Six minds." accent="One revolution." lead={site.tagline} />
+
+  <section class="container-page pb-24">
+    <figure class="glass overflow-hidden p-2" data-reveal>
+      <Image src={group} alt="Black and white group photo of the six FBAI's team members." widths={[640, 1024, 1600]} sizes="(min-width: 1280px) 1216px, 100vw" class="max-h-[34rem] w-full rounded-[1.25rem] object-cover" />
+      <figcaption class="px-4 py-3 font-label text-xs tracking-[0.2em] text-mist uppercase">Who are we?</figcaption>
+    </figure>
+  </section>
+
+  <section class="container-page pb-24 md:pb-32">
+    <SectionTitle eyebrow="The team" title="The people building" accent="the project." />
+    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {members.map((m) => {
+        const { name, photo, role, linkedin, github, email } = m.data;
+        return (
+          <li class="glass glass-hover group overflow-hidden" data-reveal data-tilt="7">
+            <div class="relative aspect-[4/5] overflow-hidden bg-navy-700">
+              <Image src={photo} alt={`Portrait of ${name}`} widths={[280, 420]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" class="size-full object-cover object-top transition duration-700 group-hover:scale-105" />
+              <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy via-navy/60 to-transparent"></div>
+              <div class="absolute inset-x-0 bottom-0 p-6" style="transform: translateZ(40px)">
+                <h3 class="font-display text-2xl text-ink">{name}</h3>
+                {role ? <p class="mt-1 font-label text-sm text-gold">{role}</p> : <Todo class="mt-2">Role</Todo>}
+              </div>
+            </div>
+            <div class="flex items-center gap-2 p-5">
+              {linkedin && <a href={linkedin} target="_blank" rel="noopener" class="rounded-full border border-white/10 p-2.5 text-mist transition hover:border-cyan/50 hover:text-cyan" aria-label={`${name} on LinkedIn (opens in a new tab)`}><Icon name="linkedin" class="size-4" /></a>}
+              {github && <a href={github} target="_blank" rel="noopener" class="rounded-full border border-white/10 p-2.5 text-mist transition hover:border-cyan/50 hover:text-cyan" aria-label={`${name} on GitHub (opens in a new tab)`}><Icon name="github" class="size-4" /></a>}
+              {email && <a href={`mailto:${email}`} class="rounded-full border border-white/10 p-2.5 text-mist transition hover:border-cyan/50 hover:text-cyan" aria-label={`Email ${name}`}><Icon name="mail" class="size-4" /></a>}
+              {!linkedin && !github && <Todo>LinkedIn & GitHub links</Todo>}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+
+  <section class="on-cream py-24 md:py-32">
+    <div class="container-page">
+      <SectionTitle eyebrow="Supervision" title="Guided by" accent="our supervisors." />
+      <ul class="grid gap-6 md:grid-cols-2">
+        {site.supervisors.map((s) => (
+          <li class="flex items-center gap-5 rounded-3xl border border-navy/12 bg-white/55 p-7" data-reveal>
+            <span class="flex size-14 shrink-0 items-center justify-center rounded-full bg-navy text-ink"><Icon name="cap" class="size-6" /></span>
+            <div>
+              <p class="font-display text-2xl text-navy">{s}</p>
+              <p class="font-label text-sm text-navy/70">Supervisor · ESPRIT</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

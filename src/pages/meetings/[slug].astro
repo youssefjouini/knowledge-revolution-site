@@ -1,0 +1,69 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { formatDate } from '@/lib/utils';
+
+export async function getStaticPaths() {
+  const meetings = (await getCollection('meetings', ({ data }) => !data.draft)).sort(
+    (a, b) => a.data.date.valueOf() - b.data.date.valueOf(),
+  );
+  return meetings.map((m, i) => ({
+    params: { slug: m.id },
+    props: { meeting: m, prev: meetings[i - 1], next: meetings[i + 1] },
+  }));
+}
+
+interface Props {
+  meeting: CollectionEntry<'meetings'>;
+  prev?: CollectionEntry<'meetings'>;
+  next?: CollectionEntry<'meetings'>;
+}
+const { meeting, prev, next } = Astro.props;
+const { Content } = await render(meeting);
+const { title, date, type, attendees, cbl_phase, location, summary } = meeting.data;
+const typeLabel = { team: 'Team meeting', supervisors: 'With supervisors', partner: 'With partner' };
+---
+<BaseLayout title={title} description={summary ?? `Minutes of the meeting of ${formatDate(date)} — FBAI's team.`} type="article" publishedTime={date}>
+  <article class="container-page max-w-4xl pt-36 pb-24">
+    <a href="/meetings" class="inline-flex items-center gap-2 font-label text-sm text-mist hover:text-ink"><Icon name="arrow-left" class="size-4" /> All meetings</a>
+    <p class="eyebrow mt-8 mb-4">{typeLabel[type]} · {cbl_phase} phase</p>
+    <h1 class="title-serif text-4xl md:text-6xl">{title}</h1>
+
+    <dl class="glass mt-10 grid gap-6 p-6 sm:grid-cols-3">
+      <div>
+        <dt class="eyebrow !text-gold mb-2 flex items-center gap-2"><Icon name="calendar" class="size-4" /> Date</dt>
+        <dd><time datetime={date.toISOString()}>{formatDate(date)}</time></dd>
+      </div>
+      {location && (
+        <div>
+          <dt class="eyebrow !text-gold mb-2 flex items-center gap-2"><Icon name="pin" class="size-4" /> Place</dt>
+          <dd>{location}</dd>
+        </div>
+      )}
+      <div class="sm:col-span-3">
+        <dt class="eyebrow !text-gold mb-3 flex items-center gap-2"><Icon name="users" class="size-4" /> Attendees</dt>
+        <dd class="flex flex-wrap gap-2">{attendees.map((a) => <span class="chip">{a}</span>)}</dd>
+      </div>
+    </dl>
+
+    <div class="prose prose-lg prose-invert prose-kr mt-12 max-w-none">
+      <Content />
+    </div>
+
+    <nav class="mt-16 grid gap-4 border-t border-white/10 pt-8 sm:grid-cols-2" aria-label="Other meetings">
+      {prev ? (
+        <a href={`/meetings/${prev.id}`} class="glass glass-hover p-5">
+          <span class="font-label text-xs text-mist">← Previous meeting</span>
+          <span class="mt-1 block font-display text-lg">{prev.data.title}</span>
+        </a>
+      ) : <span></span>}
+      {next && (
+        <a href={`/meetings/${next.id}`} class="glass glass-hover p-5 text-right">
+          <span class="font-label text-xs text-mist">Next meeting →</span>
+          <span class="mt-1 block font-display text-lg">{next.data.title}</span>
+        </a>
+      )}
+    </nav>
+  </article>
+</BaseLayout>

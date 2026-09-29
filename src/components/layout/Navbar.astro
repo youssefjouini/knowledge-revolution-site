@@ -1,0 +1,234 @@
+---
+import { Image } from 'astro:assets';
+import { nav, site } from '@/data/site';
+import Icon from '@/components/ui/Icon.astro';
+import logo from '@/assets/images/logos/fbais-logo-LOWRES-placeholder.png';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+---
+<header id="site-header" class="fixed inset-x-0 top-0 z-50 transition-all duration-300" data-scrolled="false">
+  <div class="container-page flex h-18 items-center justify-between gap-4 py-3">
+    <a href="/" class="group flex shrink-0 items-center gap-3" aria-label={`${site.name} — home`}>
+      <Image src={logo} alt="" width={40} height={40} class="size-10 rounded-full ring-1 ring-gold/50" loading="eager" />
+      <span class="hidden leading-tight sm:block">
+        <span class="block font-display text-[1.05rem] font-medium text-ink">The Knowledge <em class="text-gold">Revolution</em></span>
+        <span class="block font-label text-[0.62rem] font-semibold tracking-[0.2em] text-mist uppercase">by FBAI's</span>
+      </span>
+    </a>
+
+    <!-- Desktop pill navigation (slides: HOME · ABOUT · CONTENT · OTHERS) -->
+    <nav aria-label="Main" class="hidden lg:block">
+      <ul class="nav-pill flex items-center gap-1 rounded-full border border-white/12 bg-navy/60 p-1.5 backdrop-blur-xl">
+        {nav.map((item) =>
+          'children' in item ? (
+            <li class="dropdown relative">
+              <button
+                type="button"
+                class:list={[
+                  'nav-link flex items-center gap-1.5',
+                  item.children.some((c) => isActive(c.href)) && 'is-active',
+                ]}
+                aria-expanded="false"
+                aria-haspopup="true"
+              >
+                {item.label}
+                <svg class="size-3 transition-transform duration-300" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+              </button>
+              <div class="dropdown-panel absolute top-full left-1/2 w-72 -translate-x-1/2 pt-3">
+                <ul class="glass !bg-navy/95 space-y-1 p-2">
+                  {item.children.map((c) => (
+                    <li>
+                      <a
+                        href={c.href}
+                        class:list={['block rounded-2xl px-4 py-3 transition hover:bg-white/6', isActive(c.href) && 'bg-white/6']}
+                        aria-current={isActive(c.href) ? 'page' : undefined}
+                      >
+                        <span class:list={['block font-label text-sm font-semibold', isActive(c.href) ? 'text-gold' : 'text-ink']}>{c.label}</span>
+                        {c.description && <span class="block text-xs text-mist">{c.description}</span>}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ) : (
+            <li>
+              <a href={item.href} class:list={['nav-link', isActive(item.href) && 'is-active']} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ),
+        )}
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href={site.instagram.url} target="_blank" rel="noopener" class="hidden rounded-full p-2.5 text-mist transition hover:bg-white/8 hover:text-ink sm:inline-flex" aria-label={`Instagram ${site.instagram.handle} (opens in a new tab)`}>
+        <Icon name="instagram" class="size-5" />
+      </a>
+      <a href="/results" class="btn-gold hidden !px-5 !py-2.5 md:inline-flex">See the demo</a>
+      <button
+        id="burger"
+        type="button"
+        class="relative inline-flex size-11 items-center justify-center rounded-full border border-white/15 bg-navy/60 backdrop-blur-xl lg:hidden"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label="Open menu"
+      >
+        <span class="burger-line" data-line="1"></span>
+        <span class="burger-line" data-line="2"></span>
+        <span class="burger-line" data-line="3"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="mobile-menu fixed inset-x-0 top-0 -z-10 h-dvh overflow-y-auto bg-navy-950/97 px-4 pt-24 pb-10 backdrop-blur-2xl lg:hidden" hidden>
+    <nav aria-label="Mobile" class="container-page">
+      <ul class="space-y-6">
+        {nav.map((item, i) =>
+          'children' in item ? (
+            <li class="menu-item" style={`--i:${i}`}>
+              <p class="eyebrow mb-2">{item.label}</p>
+              <ul class="space-y-1 border-l border-white/10 pl-4">
+                {item.children.map((c) => (
+                  <li>
+                    <a href={c.href} class:list={['block py-1.5 font-display text-2xl', isActive(c.href) ? 'text-gold italic' : 'text-ink']} aria-current={isActive(c.href) ? 'page' : undefined}>{c.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li class="menu-item" style={`--i:${i}`}>
+              <a href={item.href} class:list={['block font-display text-3xl', isActive(item.href) ? 'text-gold italic' : 'text-ink']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+            </li>
+          ),
+        )}
+      </ul>
+      <div class="menu-item mt-10 flex flex-wrap gap-3" style="--i:6">
+        <a href="/results" class="btn-gold">See the demo</a>
+        <a href={site.instagram.url} target="_blank" rel="noopener" class="btn-ghost"><Icon name="instagram" class="size-4" /> {site.instagram.handle}</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .h-18 { height: 4.5rem; }
+  #site-header[data-scrolled='true'] {
+    background: rgb(10 18 48 / 0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.06);
+  }
+  .nav-link {
+    border-radius: 9999px;
+    padding: 0.55rem 1.1rem;
+    font-family: var(--font-label);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-mist);
+    transition: color 0.2s, background-color 0.2s;
+  }
+  .nav-link:hover { color: var(--color-ink); background: rgb(255 255 255 / 0.06); }
+  .nav-link.is-active { background: var(--color-ink); color: var(--color-navy); font-weight: 700; }
+
+  .dropdown-panel {
+    visibility: hidden;
+    opacity: 0;
+    transform: translate(-50%, 6px);
+    transition: opacity 0.2s, transform 0.25s var(--ease-out-expo), visibility 0.2s;
+  }
+  .dropdown:hover .dropdown-panel,
+  .dropdown:focus-within .dropdown-panel,
+  .dropdown.open .dropdown-panel {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  .dropdown:hover svg, .dropdown.open svg { transform: rotate(180deg); }
+
+  .burger-line {
+    position: absolute;
+    left: 50%;
+    width: 18px;
+    height: 1.5px;
+    margin-left: -9px;
+    border-radius: 2px;
+    background: var(--color-ink);
+    transition: transform 0.35s var(--ease-out-expo), opacity 0.2s;
+  }
+  .burger-line[data-line='1'] { transform: translateY(-6px); }
+  .burger-line[data-line='3'] { transform: translateY(6px); width: 12px; margin-left: -3px; }
+  #burger[aria-expanded='true'] .burger-line[data-line='1'] { transform: rotate(45deg); }
+  #burger[aria-expanded='true'] .burger-line[data-line='2'] { opacity: 0; transform: scaleX(0); }
+  #burger[aria-expanded='true'] .burger-line[data-line='3'] { transform: rotate(-45deg); width: 18px; margin-left: -9px; }
+
+  .mobile-menu .menu-item { opacity: 0; transform: translateY(16px); }
+  .mobile-menu.is-open .menu-item {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.5s, transform 0.6s var(--ease-out-expo);
+    transition-delay: calc(var(--i) * 50ms + 80ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-menu .menu-item { opacity: 1; transform: none; }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header')!;
+  const onScroll = () => header.dataset.scrolled = String(window.scrollY > 12);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Desktop dropdowns: click / keyboard support in addition to hover & focus
+  const dropdowns = document.querySelectorAll<HTMLLIElement>('.dropdown');
+  const closeAll = (except?: Element) =>
+    dropdowns.forEach((d) => {
+      if (d === except) return;
+      d.classList.remove('open');
+      d.querySelector('button')?.setAttribute('aria-expanded', 'false');
+    });
+  dropdowns.forEach((d) => {
+    const btn = d.querySelector('button')!;
+    btn.addEventListener('click', () => {
+      const open = !d.classList.contains('open');
+      closeAll(d);
+      d.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    d.addEventListener('mouseenter', () => btn.setAttribute('aria-expanded', 'true'));
+    d.addEventListener('mouseleave', () => { if (!d.classList.contains('open')) btn.setAttribute('aria-expanded', 'false'); });
+  });
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('.dropdown')) closeAll();
+  });
+
+  // Mobile menu
+  const burger = document.getElementById('burger')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const setMenu = (open: boolean) => {
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      menu.hidden = false;
+      requestAnimationFrame(() => menu.classList.add('is-open'));
+      menu.querySelector<HTMLElement>('a')?.focus();
+    } else {
+      menu.classList.remove('is-open');
+      menu.hidden = true;
+    }
+  };
+  burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    closeAll();
+    if (burger.getAttribute('aria-expanded') === 'true') { setMenu(false); burger.focus(); }
+  });
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+</script>

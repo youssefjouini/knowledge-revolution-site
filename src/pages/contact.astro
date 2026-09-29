@@ -1,0 +1,56 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Todo from '@/components/ui/Todo.astro';
+import { site } from '@/data/site';
+import esprit from '@/assets/images/logos/esprit-white.png';
+import instaPhone from '@/assets/images/social-media/instagram-profile-phone.jpg';
+---
+<BaseLayout title="Contact" description="Contact the FBAI's team behind The Knowledge Revolution — email and Instagram @fbais.esprit.">
+  <PageHeader eyebrow="Contact" title="Let's talk about" accent="the future of learning." lead="Professors, students, partners: we would love to hear from you." />
+
+  <section class="container-page pb-24 md:pb-32">
+    <div class="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
+      <div class="grid content-start gap-5">
+        <div class="glass glass-hover flex items-center gap-5 p-7" data-reveal data-tilt="4">
+          <span class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gold/15 text-gold"><Icon name="mail" class="size-6" /></span>
+          <div class="min-w-0">
+            <p class="eyebrow !text-gold mb-1">Email the team</p>
+            {site.email ? (
+              <a href={`mailto:${site.email}`} class="font-display text-2xl break-all text-ink hover:text-gold">{site.email}</a>
+            ) : (
+              <Todo>Team email — src/data/site.ts</Todo>
+            )}
+          </div>
+        </div>
+
+        <a href={site.instagram.url} target="_blank" rel="noopener" class="glass glass-hover flex items-center gap-5 p-7" data-reveal data-tilt="4">
+          <span class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-cyan/15 text-cyan"><Icon name="instagram" class="size-6" /></span>
+          <div class="flex-1">
+            <p class="eyebrow mb-1">Follow our journey</p>
+            <p class="font-display text-2xl text-ink">{site.instagram.handle}</p>
+            <p class="text-sm text-mist">{site.tagline}</p>
+          </div>
+          <Icon name="arrow-up-right" class="size-5 text-mist" />
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
+
+        <div class="glass flex flex-col gap-5 p-7 sm:flex-row sm:items-center" data-reveal>
+          <Image src={esprit} alt="ESPRIT" width={160} class="h-12 w-auto" />
+          <div>
+            <p class="font-semibold text-ink">{site.university}</p>
+            <p class="text-sm text-mist">{site.course}</p>
+            <p class="mt-1 text-sm text-mist">Supervisors: {site.supervisors.join(' · ')}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative mx-auto w-full max-w-sm" data-reveal>
+        <div class="absolute inset-8 rounded-full bg-cyan/20 blur-3xl"></div>
+        <Image src={instaPhone} alt="Screenshot of the @fbais.esprit Instagram profile on a phone." widths={[320, 384]} sizes="384px" class="relative w-full rounded-[2rem] border border-white/10 shadow-2xl" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

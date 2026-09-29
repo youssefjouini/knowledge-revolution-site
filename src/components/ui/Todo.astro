@@ -1,0 +1,7 @@
+---
+/** Visible placeholder for missing content: <Todo>Team email</Todo> */
+interface Props { class?: string }
+---
+<span class:list={['todo', Astro.props.class]}>
+  <span aria-hidden="true">✎</span> [TODO] <slot />
+</span>

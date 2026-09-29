@@ -1,0 +1,82 @@
+---
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import SectionTitle from '@/components/ui/SectionTitle.astro';
+import CblJourney, { type CblData } from '@/components/features/CblJourney';
+import { engage, investigate, act } from '@/data/cbl';
+import { cblPhases } from '@/data/site';
+
+import bigIdeaImg from '@/assets/images/engage/big-idea-knowledge-revolution.png';
+import questionImg from '@/assets/images/engage/essential-question.jpg';
+import challengeImg from '@/assets/images/engage/the-challenge.png';
+import diagram from '@/assets/images/engage/cbl-engage-phase-diagram.png';
+
+async function img(src: ImageMetadata, alt: string) {
+  const r = await getImage({ src, widths: [480, 800], width: 800 });
+  return { src: r.src, srcSet: r.srcSet.attribute, width: Number(r.attributes.width), height: Number(r.attributes.height), alt };
+}
+
+const statuses = Object.fromEntries(cblPhases.map((p) => [p.key, p.status])) as CblData['statuses'];
+
+const data: CblData = {
+  statuses,
+  engage: {
+    ...engage,
+    images: {
+      bigIdea: await img(bigIdeaImg, 'A glowing globe rising from an open book, surrounded by icons of learning: the Knowledge Revolution.'),
+      question: await img(questionImg, 'A student at a laptop looks at a glowing question mark and a globe, surrounded by video portraits of teachers from around the world.'),
+      challenge: await img(challengeImg, 'A student with headphones learning face to face with a teacher on a laptop.'),
+    },
+  },
+  investigate,
+  act,
+};
+
+const phases = [
+  { name: 'Engage', text: 'From a Big Idea to an Essential Question, then to a concrete, actionable Challenge.' },
+  { name: 'Investigate', text: 'Guiding questions, activities and resources to build a deep understanding and a solid foundation for the solution.' },
+  { name: 'Act', text: 'Develop the solution, implement it with a real audience, and evaluate the results.' },
+];
+---
+<BaseLayout title="CBL Journey" description="Our Challenge Based Learning journey: Engage (Big Idea, Essential Question, Challenge), Investigate and Act.">
+  <PageHeader
+    eyebrow="Challenge Based Learning"
+    title="Engage. Investigate."
+    accent="Act."
+    lead="Our project follows the Challenge Based Learning framework: three phases that take us from a big idea to a real solution."
+  />
+
+  <section class="container-page pb-24">
+    <ol class="grid gap-5 md:grid-cols-3">
+      {phases.map((p, i) => (
+        <li class="glass p-7" data-reveal>
+          <p class="font-label text-5xl font-extrabold text-white/10">0{i + 1}</p>
+          <h2 class="mt-2 font-label text-xl font-bold tracking-wider uppercase">{p.name}</h2>
+          <p class="mt-2 text-sm text-mist">{p.text}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="border-y border-white/6 bg-night/40 py-24 md:py-32">
+    <div class="container-page">
+      <SectionTitle eyebrow="Interactive journey" title="Follow our path" accent="phase by phase." lead="Select a phase to explore it. Engage is complete; Investigate is under way." />
+      <CblJourney client:visible data={data} />
+    </div>
+  </section>
+
+  <section class="container-page py-24 md:py-32">
+    <SectionTitle eyebrow="From the Engage presentation" title="The CBL" accent="process." />
+    <figure class="overflow-hidden rounded-3xl bg-white p-4 md:p-8" data-reveal>
+      <Image src={diagram} alt="CBL process diagram: 1 Engage, 2 Investigate, 3 Act. The Engage phase contains 01 The Big Idea, 02 The Essential Question and 03 The Challenge." widths={[640, 1024, 1536]} sizes="(min-width: 1280px) 1216px, 100vw" class="mx-auto w-full max-w-4xl" />
+    </figure>
+  </section>
+</BaseLayout>
+
+<style is:global>
+  @media (prefers-reduced-motion: no-preference) {
+    .cbl-fade { animation: cblFade 0.6s var(--ease-out-expo); }
+    @keyframes cblFade { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+/**
+ * Click-to-play video (nothing loads or plays until the visitor clicks).
+ * Accepts YouTube links or Google Drive "share" links.
+ */
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+interface Props { url: string; poster: ImageMetadata; title: string }
+const { url, poster, title } = Astro.props;
+
+function toEmbed(u: string) {
+  const yt = u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  if (yt) return `https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0`;
+  const drive = u.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
+  if (drive) return `https://drive.google.com/file/d/${drive[1]}/preview`;
+  return u;
+}
+const embed = toEmbed(url);
+---
+<div class="video-embed relative aspect-video overflow-hidden rounded-3xl border border-white/10 bg-night" data-embed={embed} data-title={title}>
+  <button type="button" class="group absolute inset-0 size-full" aria-label={`Play video: ${title}`}>
+    <Image src={poster} alt="" widths={[640, 1280]} sizes="(min-width: 1024px) 900px, 100vw" class="size-full object-cover opacity-80 transition duration-500 group-hover:scale-[1.02] group-hover:opacity-100" />
+    <span class="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent"></span>
+    <span class="absolute top-1/2 left-1/2 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gold text-navy shadow-[0_0_60px_rgb(232_169_58/0.6)] transition group-hover:scale-110">
+      <Icon name="play" class="ml-1 size-8" strokeWidth={2} />
+    </span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.video-embed').forEach((box) => {
+    box.querySelector('button')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = box.dataset.embed!;
+      iframe.title = box.dataset.title!;
+      iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      iframe.allowFullscreen = true;
+      iframe.className = 'absolute inset-0 size-full';
+      box.replaceChildren(iframe);
+      iframe.focus();
+    });
+  });
+</script>

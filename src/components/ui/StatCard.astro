@@ -1,0 +1,27 @@
+---
+import type { Stat } from '@/data/site';
+interface Props { stat: Stat; class?: string; variant?: 'card' | 'row' }
+const { stat, class: cls, variant = 'card' } = Astro.props;
+const color = { gold: 'text-gold', cyan: 'text-cyan', coral: 'text-coral', ink: 'text-ink' }[stat.accent ?? 'ink'];
+const decimals = stat.decimals ?? 0;
+const initial = stat.value.toLocaleString('en-US', { minimumFractionDigits: decimals, useGrouping: false });
+---
+{variant === 'card' ? (
+  <figure class:list={['stat-card flex flex-col pt-12', cls]} data-reveal>
+    <p class:list={['font-label text-5xl font-extrabold tracking-tight md:text-6xl', color]}>
+      {stat.prefix}<span data-count={stat.value} data-decimals={decimals}>{initial}</span>{stat.suffix}
+    </p>
+    <figcaption class="mt-4 text-base leading-snug text-ink/85">{stat.label}</figcaption>
+    <p class="mt-auto pt-5 font-label text-[0.68rem] tracking-[0.14em] text-mist uppercase">Source · {stat.source}</p>
+  </figure>
+) : (
+  <figure class:list={['stat-card flex flex-col gap-2 !rounded-2xl !py-6 sm:flex-row sm:items-center sm:gap-8', cls]} data-reveal>
+    <p class:list={['w-40 shrink-0 pt-3 font-label text-4xl font-extrabold tracking-tight sm:pt-0', color]}>
+      {stat.prefix}<span data-count={stat.value} data-decimals={decimals}>{initial}</span>{stat.suffix}
+    </p>
+    <div>
+      <figcaption class="leading-snug text-ink/85">{stat.label}</figcaption>
+      <p class="mt-1 font-label text-[0.68rem] tracking-[0.14em] text-mist uppercase">Source · {stat.source}</p>
+    </div>
+  </figure>
+)}

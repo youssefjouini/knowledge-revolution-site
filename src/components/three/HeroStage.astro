@@ -1,0 +1,46 @@
+---
+/**
+ * Decides whether the 3D hero is worth loading — without shipping any framework code upfront.
+ * - Phones, "save data", low-memory devices or no WebGL → keep the static poster.
+ * - Otherwise, once the page is loaded and the browser is idle, lazy-load React + three.js and fade the scene in.
+ */
+---
+<div id="hero-stage" class="absolute inset-0 opacity-0 transition-opacity duration-[1500ms]" aria-hidden="true"></div>
+
+<script>
+  const el = document.getElementById('hero-stage')!;
+  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+
+  function hasWebGL() {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  }
+
+  const wide = window.matchMedia('(min-width: 768px)').matches;
+  const saveData = nav.connection?.saveData === true;
+  const lowMemory = (nav.deviceMemory ?? 8) < 4;
+
+  if (wide && !saveData && !lowMemory && hasWebGL()) {
+    const opts = {
+      lite: (nav.hardwareConcurrency ?? 8) <= 4 || window.innerWidth < 1100,
+      reduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    };
+    const load = async () => {
+      const { mountHero } = await import('./mountHero');
+      mountHero(el, opts, () => {
+        el.style.opacity = '1';
+        document.getElementById('hero-poster')?.classList.add('is-hidden');
+      });
+    };
+    // Content first: start the 3D once the page is fully loaded and the browser is idle
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const idle = () => (w.requestIdleCallback ? w.requestIdleCallback(load, { timeout: 3000 }) : load());
+    const start = () => setTimeout(idle, 1200);
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start, { once: true });
+  }
+</script>

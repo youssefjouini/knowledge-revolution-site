@@ -1,0 +1,262 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroStage from '@/components/three/HeroStage.astro';
+import AvatarViewer from '@/components/three/AvatarViewer';
+import { hasAvatar, AVATAR_SRC } from '@/lib/avatar';
+import Icon from '@/components/ui/Icon.astro';
+import StatCard from '@/components/ui/StatCard.astro';
+import CblProgress from '@/components/ui/CblProgress.astro';
+import Promises from '@/components/ui/Promises.astro';
+import PostCard from '@/components/ui/PostCard.astro';
+import SectionTitle from '@/components/ui/SectionTitle.astro';
+import { site, homeStats } from '@/data/site';
+
+import bigIdea from '@/assets/images/engage/big-idea-knowledge-revolution.png';
+import ctaThumb from '@/assets/images/demo/call-to-action-video-thumbnail.jpg';
+import esprit from '@/assets/images/logos/esprit-white.png';
+import iu from '@/assets/images/logos/iu-wordmark-cropped.png';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+const team = (await getCollection('team')).sort((a, b) => a.data.order - b.data.order);
+
+const pillars = [
+  {
+    icon: 'cube',
+    title: 'Immersive Learning',
+    text: 'Education becomes an experience: students learn face to face with 3D avatars of professors, thinkers and great minds.',
+  },
+  {
+    icon: 'brain',
+    title: 'AI-Powered Avatars',
+    text: 'Deep learning, multimodal and generative AI give each avatar a voice and the ability to answer students’ questions.',
+  },
+  {
+    icon: 'globe',
+    title: 'Learn Anywhere, Anytime',
+    text: 'At home or anywhere else, whenever you want — the best teachers and minds come to you, in your own language.',
+  },
+  {
+    icon: 'cap',
+    title: 'Quality Education for All',
+    text: 'Aligned with SDG 4: making the best knowledge available to every learner, wherever and whenever they are.',
+  },
+];
+---
+<BaseLayout>
+  <!-- ============================== HERO ============================== -->
+  <section class="relative isolate overflow-hidden">
+    <div class="pointer-events-none absolute inset-0 -z-10">
+      <div class="absolute top-1/4 right-[-10%] h-[40rem] w-[40rem] rounded-full bg-cyan/12 blur-[120px]"></div>
+      <div class="absolute bottom-0 left-[-10%] h-[30rem] w-[30rem] rounded-full bg-gold/10 blur-[120px]"></div>
+    </div>
+
+    <div class="container-page grid min-h-[100svh] items-center gap-8 pt-28 pb-16 lg:grid-cols-[1.05fr_1fr] lg:pt-24">
+      <div class="relative z-10">
+        <p class="eyebrow mb-6 flex items-center gap-3">
+          <span class="wave-bars inline-flex h-4 items-center gap-[3px]" aria-hidden="true">
+            <span style="height:40%;animation-delay:-.2s"></span><span style="height:100%;animation-delay:-.5s"></span><span style="height:70%;animation-delay:-.1s"></span><span style="height:90%;animation-delay:-.7s"></span>
+          </span>
+          {site.team} · Deep Learning Project · CBL
+        </p>
+        <h1 class="title-serif text-[3.2rem] leading-[0.98] sm:text-7xl xl:text-8xl">
+          The Knowledge <em>Revolution</em>
+        </h1>
+        <p class="mt-7 font-display text-2xl text-ink italic md:text-3xl">What if the greatest minds came to you?</p>
+        <p class="lead mt-5 max-w-xl">
+          Learn face to face from the best teachers and minds — wherever you are, whenever you want, in your own language.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a href="/about" class="btn-gold">Discover the project <Icon name="arrow-right" class="size-4" /></a>
+          <a href="/blog" class="btn-ghost">Follow our progress</a>
+        </div>
+        <p class="mt-10 font-label text-xs font-semibold tracking-[0.3em] text-gold/90 uppercase">{site.slogan}</p>
+      </div>
+
+      <!-- 3D stage: static poster first (also the mobile version), WebGL scene fades in on capable screens -->
+      <div class="relative mx-auto aspect-square w-full max-w-[34rem] lg:max-w-none">
+        <div id="hero-poster" class="absolute inset-[12%] transition-opacity duration-1000">
+          <div class="absolute inset-0 rounded-full bg-cyan/20 blur-3xl"></div>
+          <div class="absolute -inset-4 rounded-full border border-cyan/25"></div>
+          <div class="absolute -inset-10 rounded-full border border-gold/15"></div>
+          <Image
+            src={bigIdea}
+            alt="A glowing globe rising from an open book, surrounded by icons of learning: the symbol of the Knowledge Revolution."
+            widths={[360, 560, 800]}
+            sizes="(min-width: 1024px) 40vw, 80vw"
+            class="relative size-full rounded-full object-cover shadow-[0_0_80px_-10px_rgb(92_225_230/0.5)]"
+            loading="eager"
+          />
+          <div class="wave-bars absolute -bottom-10 left-1/2 flex h-10 -translate-x-1/2 items-center gap-1" aria-hidden="true">
+            {Array.from({ length: 15 }).map((_, i) => (
+              <span style={`height:${30 + ((i * 37) % 70)}%;animation-delay:-${(i * 0.13).toFixed(2)}s`}></span>
+            ))}
+          </div>
+        </div>
+        <div class="absolute -inset-[10%]"><HeroStage /></div>
+      </div>
+    </div>
+
+    <a href="#concept" class="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 font-label text-[0.65rem] tracking-[0.3em] text-mist uppercase md:flex" aria-label="Scroll to the concept">
+      Scroll
+      <span class="h-10 w-px bg-gradient-to-b from-cyan to-transparent"></span>
+    </a>
+  </section>
+
+  <!-- ============================== CONCEPT ============================== -->
+  <section id="concept" class="container-page scroll-mt-24 py-24 md:py-32">
+    <div class="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-20">
+      <div>
+        <p class="eyebrow mb-4" data-reveal>The concept</p>
+        <h2 class="title-serif text-4xl md:text-6xl" data-reveal>Turning education into an <em>experience.</em></h2>
+      </div>
+      <div class="space-y-6 text-lg leading-relaxed text-mist" data-reveal>
+        <p>
+          <strong class="text-ink">The Knowledge Revolution</strong> is a Deep Learning project developed by the FBAI's team (Future Builders of AI) at ESPRIT, following the Challenge Based Learning approach.
+        </p>
+        <p>
+          Using deep learning, multimodal AI and generative AI, the project creates <span class="text-cyan">3D avatars of professors, thinkers and great minds</span> that can speak with a voice and answer students' questions — so that every student can learn whenever and wherever they want.
+        </p>
+        <a href="/about" class="inline-flex items-center gap-2 font-label text-sm font-semibold text-gold hover:text-gold-soft">
+          Read about the project <Icon name="arrow-right" class="size-4" />
+        </a>
+      </div>
+    </div>
+
+    <ul class="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {pillars.map((p, i) => (
+        <li class="glass glass-hover p-7" data-reveal data-tilt>
+          <span class="mb-6 flex size-12 items-center justify-center rounded-2xl border border-cyan/30 bg-cyan/10 text-cyan" style="transform: translateZ(30px)">
+            <Icon name={p.icon} class="size-6" />
+          </span>
+          <p class="font-label text-xs font-semibold tracking-widest text-gold">0{i + 1}</p>
+          <h3 class="mt-2 font-display text-2xl text-ink">{p.title}</h3>
+          <p class="mt-3 text-sm leading-relaxed text-mist">{p.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- ============================== PROMISES (cream) ============================== -->
+  <section class="on-cream relative py-24 md:py-32">
+    <div class="container-page">
+      <div class="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div>
+          <p class="eyebrow mb-4" data-reveal>Our vision</p>
+          <h2 class="title-serif text-4xl md:text-6xl" data-reveal>Three promises to <em>every student.</em></h2>
+        </div>
+        <p class="lead max-w-md" data-reveal>From the conclusion of our Engage phase presentation.</p>
+      </div>
+      <Promises />
+    </div>
+  </section>
+
+  <!-- ============================== NUMBERS ============================== -->
+  <section class="container-page py-24 md:py-32">
+    <SectionTitle eyebrow="Why now" title="The numbers behind" accent="the need." lead="A world short of teachers, online courses that students do not finish — and a generation that already learns with AI." />
+    <div class="grid gap-5 md:grid-cols-3">
+      {homeStats.map((s) => <StatCard stat={s} />)}
+    </div>
+    <a href="/theme" class="mt-10 inline-flex items-center gap-2 font-label text-sm font-semibold text-cyan hover:text-ink" data-reveal>
+      Explore the theme & motivation <Icon name="arrow-right" class="size-4" />
+    </a>
+  </section>
+
+  <!-- ============================== CBL PROGRESS ============================== -->
+  <section class="container-page pb-24 md:pb-32">
+    <div class="glass p-8 md:p-12" data-reveal>
+      <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div>
+          <p class="eyebrow mb-3">Where we are</p>
+          <h2 class="title-serif text-3xl md:text-4xl">The challenge is set. <em>Now we investigate.</em></h2>
+        </div>
+        <a href="/cbl" class="btn-ghost shrink-0">Our CBL journey <Icon name="arrow-right" class="size-4" /></a>
+      </div>
+      <CblProgress />
+    </div>
+  </section>
+
+  <!-- ============================== AVATAR PREVIEW (only when public/models/avatar.glb exists) ============================== -->
+  {hasAvatar && (
+    <section class="container-page pb-24 md:pb-32">
+      <div class="grid items-center gap-10 lg:grid-cols-2">
+        <div>
+          <p class="eyebrow mb-4" data-reveal>Meet the first avatar</p>
+          <h2 class="title-serif text-4xl md:text-6xl" data-reveal>A great mind, <em>in 3D.</em></h2>
+          <p class="lead mt-5" data-reveal>Drag to turn it, scroll to zoom. More on the demo page.</p>
+          <a href="/results" class="btn-gold mt-8" data-reveal>See the full demo <Icon name="arrow-right" class="size-4" /></a>
+        </div>
+        <div class="glass aspect-square overflow-hidden" data-reveal>
+          <AvatarViewer client:visible src={AVATAR_SRC} />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ============================== BLOG ============================== -->
+  <section class="container-page pb-24 md:pb-32">
+    <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+      <SectionTitle eyebrow="Progress blog" title="Latest from" accent="the journal." class="!mb-0" />
+      <a href="/blog" class="btn-ghost shrink-0" data-reveal>All posts <Icon name="arrow-right" class="size-4" /></a>
+    </div>
+    <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+
+  <!-- ============================== TEAM TEASER ============================== -->
+  <section class="container-page pb-24 md:pb-32">
+    <div class="glass relative overflow-hidden p-8 md:p-14" data-reveal>
+      <div class="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-gold/15 blur-3xl"></div>
+      <div class="relative grid items-center gap-10 lg:grid-cols-2">
+        <div>
+          <p class="eyebrow mb-4">Meet the team</p>
+          <h2 class="title-serif text-4xl md:text-6xl">Six minds. <em>One revolution.</em></h2>
+          <p class="lead mt-5">{site.team} — {site.teamLong}. {site.tagline}</p>
+          <a href="/team" class="btn-gold mt-8">Meet FBAI's <Icon name="arrow-right" class="size-4" /></a>
+        </div>
+        <ul class="grid grid-cols-3 gap-4 sm:gap-6">
+          {team.map((m) => (
+            <li class="text-center">
+              <Image src={m.data.photo} alt={m.data.name} width={160} height={160} class="mx-auto aspect-square w-full max-w-28 rounded-full object-cover object-top ring-2 ring-gold/40" />
+              <p class="mt-2 font-label text-xs font-semibold text-ink">{m.data.name}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== DEMO CTA ============================== -->
+  <section class="relative isolate overflow-hidden py-24 md:py-32">
+    <Image src={ctaThumb} alt="" widths={[640, 1280]} sizes="100vw" class="absolute inset-0 -z-20 size-full object-cover opacity-30" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/50"></div>
+    <div class="container-page">
+      <p class="eyebrow mb-4" data-reveal>Results & demo</p>
+      <h2 class="title-serif max-w-3xl text-4xl md:text-6xl" data-reveal>See the avatars <em>come to life.</em></h2>
+      <p class="lead mt-5 max-w-xl" data-reveal>Our call-to-action video, the avatar demo and the results of the project — updated as we move through Investigate and Act.</p>
+      <a href="/results" class="btn-gold mt-9" data-reveal><Icon name="play" class="size-4" /> Go to the demo</a>
+    </div>
+  </section>
+
+  <!-- ============================== LOGOS ============================== -->
+  <section class="container-page pt-16" aria-label="Institutions">
+    <div class="flex flex-col items-center justify-center gap-10 sm:flex-row sm:gap-20" data-reveal>
+      <div class="text-center">
+        <Image src={esprit} alt="ESPRIT — Honoris United Universities" width={220} class="h-14 w-auto" />
+        <p class="mt-3 font-label text-[0.65rem] tracking-[0.2em] text-mist uppercase">Our university</p>
+      </div>
+      <div class="text-center">
+        <div class="rounded-2xl bg-ink px-5 py-3"><Image src={iu} alt="Indiana University" width={260} class="h-9 w-auto object-contain" /></div>
+        <p class="mt-3 font-label text-[0.65rem] tracking-[0.2em] text-mist uppercase">Potential partner</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  #hero-poster:global(.is-hidden) { opacity: 0; }
+</style>

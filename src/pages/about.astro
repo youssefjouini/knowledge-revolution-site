@@ -1,0 +1,163 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import SectionTitle from '@/components/ui/SectionTitle.astro';
+import Promises from '@/components/ui/Promises.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Todo from '@/components/ui/Todo.astro';
+import { site, challenge, essentialQuestion } from '@/data/site';
+
+import p1 from '@/assets/images/problem/04-attended-couldnt-ask.jpg';
+import p2 from '@/assets/images/problem/05-missed-the-lecture.jpg';
+import p3 from '@/assets/images/problem/06-attended-still-lost.jpg';
+import p4 from '@/assets/images/problem/07-tried-existing-platform-still-stuck.jpg';
+import p5 from '@/assets/images/problem/08-nobody-answered-my-email.jpg';
+import p6 from '@/assets/images/problem/09-rewatched-recording-same-confusion.jpg';
+
+import stressed from '@/assets/images/problem/student-comments/comment-01.jpg';
+import c2 from '@/assets/images/problem/student-comments/comment-02.jpg';
+import c3 from '@/assets/images/problem/student-comments/comment-03.jpg';
+import c4 from '@/assets/images/problem/student-comments/comment-04.jpg';
+import c5 from '@/assets/images/problem/student-comments/comment-05.jpg';
+import c6 from '@/assets/images/problem/student-comments/comment-06.jpg';
+import c7 from '@/assets/images/problem/student-comments/comment-07.jpg';
+import c8 from '@/assets/images/problem/student-comments/comment-08.jpg';
+
+// Alt text = transcription of each screenshot (usernames left out on purpose)
+const comments = [
+  { img: c2, text: 'One of my teachers won’t even share the syllabus.. THE SYLLABUS' },
+  { img: c3, text: 'my prof won’t let us take pictures bc the slides are her “intellectual property” but I paid $600 for this class??' },
+  { img: c4, text: 'Real I’m just there for the attendance grade. I learn nothing' },
+  { img: c5, text: 'I’m freshman and I go home with nothing on my head, I’m hopeless, how could some people still understand the lesson' },
+  { img: c6, text: '7 college classes. I AM UNWELL' },
+  { img: c7, text: 'I go to class to make sure I’m teaching myself right' },
+  { img: c8, text: 'all they do is showing a powerpoint that was also uploaded online and read off it' },
+];
+
+const problems = [
+  { img: p1, text: 'Attended, but couldn’t ask in front of everyone.' },
+  { img: p2, text: 'Missed the lecture.' },
+  { img: p3, text: 'Attended, still lost.' },
+  { img: p4, text: 'Tried an existing platform, still stuck.' },
+  { img: p5, text: 'Nobody answered my email.' },
+  { img: p6, text: 'Rewatched the recording twice — same confusion.' },
+];
+
+const approach = [
+  { icon: 'layers', title: 'Deep learning & multimodal AI', text: 'Voice, visuals and language working together.' },
+  { icon: 'sparkle', title: 'Generative AI', text: 'Powering the avatars’ answers to students’ questions.' },
+  { icon: 'cube', title: 'Interactive 3D avatars', text: 'Professors, thinkers and great minds — with a realistic voice.' },
+  { icon: 'shield', title: 'Responsible AI', text: 'AI-generated content is clearly disclosed.', href: '/theme#risk' },
+];
+---
+<BaseLayout title="About the Project" description="Vision, context, problem, objectives and approach of The Knowledge Revolution, a Deep Learning CBL project by FBAI's at ESPRIT.">
+  <PageHeader
+    eyebrow="About the project"
+    title="Bringing the greatest minds"
+    accent="to every learner."
+    lead="The goal is to turn education into an experience — so that every student can learn whenever and wherever they want."
+  />
+
+  <!-- Overview / context -->
+  <section class="container-page pb-24">
+    <div class="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+      <div class="space-y-6 text-lg leading-relaxed text-mist" data-reveal>
+        <p>
+          <strong class="text-ink">The Knowledge Revolution</strong> is a Deep Learning project developed by the FBAI's team (Future Builders of AI) at ESPRIT, following the Challenge Based Learning (CBL) approach, under the supervision of Mr. Safouane Jebali and Mrs. Wided Askri.
+        </p>
+        <p>
+          Using deep learning, multimodal AI and generative AI, the project creates <span class="text-cyan">3D avatars of professors, thinkers and great minds</span> that can speak with a voice and answer students' questions. Students can learn whenever and wherever they want — the best teachers and minds come to them, at home or anywhere else.
+        </p>
+      </div>
+      <dl class="glass grid gap-5 p-7 text-sm" data-reveal>
+        <div><dt class="eyebrow !text-gold mb-1">Team</dt><dd class="text-ink">{site.team} — {site.teamLong}</dd></div>
+        <div><dt class="eyebrow !text-gold mb-1">Course</dt><dd class="text-ink">{site.course}</dd></div>
+        <div><dt class="eyebrow !text-gold mb-1">University</dt><dd class="text-ink">{site.university}</dd></div>
+        <div><dt class="eyebrow !text-gold mb-1">Supervisors</dt><dd class="text-ink">{site.supervisors.join(' · ')}</dd></div>
+        <div><dt class="eyebrow !text-gold mb-1">Potential partner</dt><dd class="text-ink">Indiana University</dd></div>
+        <div><dt class="eyebrow !text-gold mb-1">Current phase</dt><dd class="text-ink">Engage completed → {site.currentPhase}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- The problem -->
+  <section class="border-y border-white/6 bg-night/40 py-24 md:py-32">
+    <div class="container-page">
+      <p class="eyebrow mb-4" data-reveal>The problem, in the students' words</p>
+      <h2 class="title-caps text-4xl md:text-6xl" data-reveal>Problem <span class="light">statement</span></h2>
+      <p class="lead mt-5 max-w-2xl" data-reveal>Six situations every student recognizes.</p>
+
+      <ul class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {problems.map((p, i) => (
+          <li class="glass group overflow-hidden" data-reveal>
+            <div class="relative aspect-[3/2] overflow-hidden">
+              <Image src={p.img} alt="" widths={[360, 540]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" class="size-full object-cover grayscale-[35%] transition duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+              <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/10 to-transparent"></div>
+              <span class="absolute top-4 left-4 flex size-9 items-center justify-center rounded-full bg-navy/80 font-label text-sm font-bold text-gold backdrop-blur">{i + 1}</span>
+            </div>
+            <p class="px-6 pt-1 pb-6 font-display text-xl text-ink">{p.text}</p>
+          </li>
+        ))}
+      </ul>
+
+      <div class="mt-24 grid items-start gap-12 lg:grid-cols-[1fr_1.5fr]">
+        <div class="lg:sticky lg:top-28">
+          <p class="eyebrow mb-4" data-reveal>Real students' comments online</p>
+          <p class="title-serif text-5xl md:text-7xl" data-reveal>“Is anyone <em>there?</em>”</p>
+          <p class="lead mt-5" data-reveal>They all end with the same cry.</p>
+          <Image src={stressed} alt="Illustration of a stressed student holding their head in front of a laptop and an open book." widths={[400, 640]} sizes="(min-width: 1024px) 400px, 90vw" class="mt-10 w-full max-w-sm rounded-3xl bg-white p-4" data-reveal />
+        </div>
+        <ul class="columns-1 gap-4 sm:columns-2">
+          {comments.map((c) => (
+            <li class="mb-4 break-inside-avoid overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-white/10" data-reveal>
+              <Image src={c.img} alt={`Student comment posted online: “${c.text}”`} widths={[400, 700]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" class="w-full" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Objectives -->
+  <section class="container-page py-24 md:py-32">
+    <SectionTitle eyebrow="Our objectives" title="The question we answer," accent="the challenge we accept." />
+    <div class="grid gap-6 md:grid-cols-2">
+      <figure class="glass p-8 md:p-10" data-reveal data-tilt="5">
+        <p class="eyebrow !text-gold mb-5">Essential question</p>
+        <blockquote class="font-quote text-2xl leading-relaxed text-ink md:text-3xl">{essentialQuestion}</blockquote>
+      </figure>
+      <figure class="glass p-8 md:p-10" data-reveal data-tilt="5">
+        <p class="eyebrow !text-gold mb-5">The challenge</p>
+        <blockquote class="font-quote text-2xl leading-relaxed text-ink md:text-3xl">{challenge}</blockquote>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Vision -->
+  <section class="on-cream py-24 md:py-32">
+    <div class="container-page">
+      <SectionTitle eyebrow="Our vision" title="What changes" accent="for students." />
+      <Promises />
+    </div>
+  </section>
+
+  <!-- Approach -->
+  <section class="container-page py-24 md:py-32">
+    <SectionTitle eyebrow="Our approach" title="How we plan" accent="to get there." />
+    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {approach.map((a) => (
+        <li class="glass glass-hover p-7" data-reveal data-tilt>
+          <span class="mb-5 flex size-12 items-center justify-center rounded-2xl border border-cyan/30 bg-cyan/10 text-cyan"><Icon name={a.icon} class="size-6" /></span>
+          <h3 class="font-display text-xl text-ink">{a.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-mist">{a.text}</p>
+          {a.href && <a href={a.href} class="mt-4 inline-flex items-center gap-1 font-label text-xs font-semibold text-cyan">Why it matters <Icon name="arrow-right" class="size-3.5" /></a>}
+        </li>
+      ))}
+    </ul>
+    <div class="mt-10 flex flex-wrap items-center gap-4" data-reveal>
+      <Todo>Detailed technical approach — to be written during the Investigate phase.</Todo>
+      <a href="/methodology" class="inline-flex items-center gap-2 font-label text-sm font-semibold text-gold hover:text-gold-soft">AI & Methodology <Icon name="arrow-right" class="size-4" /></a>
+    </div>
+  </section>
+</BaseLayout>
