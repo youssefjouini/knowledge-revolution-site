@@ -15,6 +15,9 @@ import {
   responsiblePrinciples,
 } from '@/data/methodology';
 
+/** Set to false to publish the page. */
+const comingSoon = true;
+
 const nodes = [
   { ...pipelineInput, kind: 'io' as const, tech: undefined },
   ...pipelineSteps.map((s) => ({ ...s, icon: s.icon ?? 'cpu', kind: 'step' as const })),
@@ -22,6 +25,10 @@ const nodes = [
 ];
 ---
 <BaseLayout title="AI & Methodology" description="How The Knowledge Revolution works: from a student's question to a talking 3D avatar — pipeline, models, datasets and metrics.">
+  <!-- The page is ready but not published yet: content blurred, "Coming soon" card on top.
+       To reveal it, set `comingSoon = false` at the top of this file. -->
+  <div class="relative">
+    <div class:list={[comingSoon && 'coming-soon-blur']} inert={comingSoon} aria-hidden={comingSoon ? 'true' : undefined}>
   <PageHeader
     eyebrow="AI & methodology"
     title="From a question"
@@ -146,9 +153,30 @@ const nodes = [
       </ul>
     </div>
   </section>
+    </div>
+
+    {comingSoon && (
+      <div class="pointer-events-none absolute inset-0 z-10">
+        <div class="sticky top-0 flex h-screen items-center justify-center px-4">
+          <div class="glass pointer-events-auto max-w-md !bg-navy/80 p-8 text-center md:p-10">
+            <span class="mx-auto mb-5 flex size-14 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold"><Icon name="hourglass" class="size-6" /></span>
+            <p class="eyebrow mb-3">AI & Methodology</p>
+            <h1 class="title-serif text-4xl md:text-5xl">Coming <em>soon.</em></h1>
+            <p class="mt-4 text-mist">Our technical pipeline is being designed during the Investigate phase. This page will be unveiled as soon as it is ready.</p>
+            <a href="/cbl" class="btn-gold mt-7">Follow our CBL journey <Icon name="arrow-right" class="size-4" /></a>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
 </BaseLayout>
 
 <style>
+  .coming-soon-blur {
+    filter: blur(14px);
+    user-select: none;
+    pointer-events: none;
+  }
   .pipe-dot { transition: box-shadow 0.6s, transform 0.6s var(--ease-out-expo); }
   .pipe-step.is-lit .pipe-dot {
     box-shadow: 0 0 0 6px rgb(92 225 230 / 0.12), 0 0 40px rgb(92 225 230 / 0.55);

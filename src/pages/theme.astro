@@ -7,27 +7,13 @@ import StatCard from '@/components/ui/StatCard.astro';
 import Todo from '@/components/ui/Todo.astro';
 import Icon from '@/components/ui/Icon.astro';
 import { needStats, opportunityStats, riskStats, marketChart } from '@/data/site';
+import { sdgs } from '@/data/sdgs';
 
 import bigIdea from '@/assets/images/engage/big-idea-knowledge-revolution.png';
 import needBg from '@/assets/images/backgrounds/the-need-bg-photo.jpg';
 import oppBg from '@/assets/images/backgrounds/the-opportunity-bg-photo.jpg';
 import riskBg from '@/assets/images/backgrounds/the-risk-bg-photo.jpg';
-import sdg4 from '@/assets/images/sdgs/sdg-04-quality-education.png';
-import sdg9 from '@/assets/images/sdgs/sdg-09-industry-innovation.png';
-import sdg10 from '@/assets/images/sdgs/sdg-10-reduced-inequalities.png';
-import sdg17 from '@/assets/images/sdgs/sdg-17-partnerships.png';
 import sdgWheel from '@/assets/images/sdgs/sdg-wheel.png';
-
-/**
- * [TODO] One sentence per SDG explaining the link with the project.
- * Replace `null` by the sentence, e.g. link: 'Our avatars ...'
- */
-const sdgs = [
-  { img: sdg4, n: 4, name: 'Quality Education', main: true, link: null as string | null },
-  { img: sdg9, n: 9, name: 'Industry, Innovation and Infrastructure', link: null as string | null },
-  { img: sdg10, n: 10, name: 'Reduced Inequalities', link: null as string | null },
-  { img: sdg17, n: 17, name: 'Partnerships for the Goals', link: null as string | null },
-];
 
 const maxMarket = Math.max(...marketChart.map((d) => d.value));
 ---
@@ -149,7 +135,7 @@ const maxMarket = Math.max(...marketChart.map((d) => d.value));
   <section class="on-cream py-24 md:py-32">
     <div class="container-page">
       <div class="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
-        <SectionTitle eyebrow="Sustainable Development Goals" title="Aligned with" accent="SDG 4 — Quality Education." lead="Our main goal is SDG 4. The project also contributes to three other goals of the 2030 Agenda." class="!mb-0" />
+        <SectionTitle eyebrow="Sustainable Development Goals" title="Aligned with" accent="4 SDGs." lead="Our main goal is SDG 4 — Quality Education. The project also contributes to three other goals of the 2030 Agenda." class="!mb-0" />
         <Image src={sdgWheel} alt="The SDG colour wheel" width={160} class="hidden size-40 lg:block" data-reveal />
       </div>
       <ul class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

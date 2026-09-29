@@ -1,0 +1,72 @@
+---
+/** Home page journal block: the latest post in a large card, the next ones as a compact list. */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, readingTime } from '@/lib/utils';
+import Icon from './Icon.astro';
+
+interface Props { posts: CollectionEntry<'blog'>[] }
+const [featured, ...rest] = Astro.props.posts;
+---
+{featured && (
+  <div class="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
+    <!-- Featured post -->
+    <article class="glass glass-hover group relative flex flex-col overflow-hidden" data-reveal>
+      <div class="relative aspect-[16/9] overflow-hidden bg-navy-700 lg:aspect-[16/10]">
+        {featured.data.cover && (
+          <Image
+            src={featured.data.cover}
+            alt={featured.data.coverAlt ?? ''}
+            widths={[480, 800, 1100]}
+            sizes="(min-width: 1024px) 700px, 100vw"
+            class="size-full object-cover transition duration-700 group-hover:scale-105"
+          />
+        )}
+        <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/30 to-transparent"></div>
+        <div class="absolute top-5 left-5 flex gap-2">
+          <span class="chip !border-gold/60 !bg-gold !text-navy">Latest</span>
+          <span class="chip !border-white/20 !bg-navy/85 !text-gold backdrop-blur">{featured.data.category}</span>
+        </div>
+        <div class="absolute inset-x-0 bottom-0 p-6 md:p-8">
+          <p class="font-label text-xs text-mist">
+            <time datetime={featured.data.date.toISOString()}>{formatDate(featured.data.date)}</time> · {readingTime(featured.body)} min read
+          </p>
+          <h3 class="mt-2 font-display text-3xl leading-tight text-ink md:text-4xl">
+            <a href={`/blog/${featured.id}`} class="after:absolute after:inset-0">{featured.data.title}</a>
+          </h3>
+        </div>
+      </div>
+      <div class="flex flex-1 flex-col p-6 md:p-8">
+        <p class="text-mist">{featured.data.excerpt}</p>
+        <span class="mt-5 inline-flex items-center gap-2 font-label text-sm font-semibold text-gold" aria-hidden="true">
+          Read the post <Icon name="arrow-right" class="size-4 transition group-hover:translate-x-1" />
+        </span>
+      </div>
+    </article>
+
+    <!-- Next posts -->
+    <ul class="flex flex-col gap-4">
+      {rest.map((post) => (
+        <li data-reveal>
+          <article class="glass glass-hover group relative flex items-center gap-4 overflow-hidden p-3 pr-5">
+            <div class="relative size-24 shrink-0 overflow-hidden rounded-2xl bg-navy-700 sm:size-28">
+              {post.data.cover && (
+                <Image src={post.data.cover} alt="" widths={[120, 240]} sizes="112px" class="size-full object-cover transition duration-700 group-hover:scale-110" />
+              )}
+            </div>
+            <div class="min-w-0">
+              <p class="font-label text-[0.7rem] font-semibold tracking-wider text-gold uppercase">{post.data.category}</p>
+              <h3 class="mt-1 font-display text-lg leading-snug text-ink">
+                <a href={`/blog/${post.id}`} class="after:absolute after:inset-0">{post.data.title}</a>
+              </h3>
+              <p class="mt-1 font-label text-xs text-mist">
+                <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, 'short')}</time> · {readingTime(post.body)} min read
+              </p>
+            </div>
+            <Icon name="arrow-right" class="ml-auto hidden size-5 shrink-0 text-cyan transition group-hover:translate-x-1 sm:block" />
+          </article>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}

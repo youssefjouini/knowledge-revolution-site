@@ -30,6 +30,14 @@
       reduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     };
     const load = async () => {
+      if (import.meta.env.DEV) {
+        // Dev only: the React plugin expects its Fast Refresh preamble, which Astro only
+        // injects on pages that have a React island. Stub it so the lazy scene can load.
+        const w = window as unknown as Record<string, unknown>;
+        w.__vite_plugin_react_preamble_installed__ = true;
+        w.$RefreshReg$ ??= () => {};
+        w.$RefreshSig$ ??= () => (type: unknown) => type;
+      }
       const { mountHero } = await import('./mountHero');
       mountHero(el, opts, () => {
         el.style.opacity = '1';

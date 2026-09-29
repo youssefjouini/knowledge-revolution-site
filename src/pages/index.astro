@@ -9,7 +9,8 @@ import Icon from '@/components/ui/Icon.astro';
 import StatCard from '@/components/ui/StatCard.astro';
 import CblProgress from '@/components/ui/CblProgress.astro';
 import Promises from '@/components/ui/Promises.astro';
-import PostCard from '@/components/ui/PostCard.astro';
+import FeaturedPosts from '@/components/ui/FeaturedPosts.astro';
+import { sdgs } from '@/data/sdgs';
 import SectionTitle from '@/components/ui/SectionTitle.astro';
 import { site, homeStats } from '@/data/site';
 
@@ -18,9 +19,11 @@ import ctaThumb from '@/assets/images/demo/call-to-action-video-thumbnail.jpg';
 import esprit from '@/assets/images/logos/esprit-white.png';
 import iu from '@/assets/images/logos/iu-wordmark-cropped.png';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const posts = allPosts.slice(0, 4);
+const postCount = allPosts.length;
 const team = (await getCollection('team')).sort((a, b) => a.data.order - b.data.order);
 
 const pillars = [
@@ -106,6 +109,24 @@ const pillars = [
     </a>
   </section>
 
+  <!-- ============================== JOURNAL (featured) ============================== -->
+  <section class="relative isolate overflow-hidden border-y border-white/8 bg-night/50 py-20 md:py-28" aria-labelledby="journal-title">
+    <div class="pointer-events-none absolute -top-32 left-1/4 -z-10 h-80 w-[40rem] rounded-full bg-gold/10 blur-3xl"></div>
+    <div class="container-page">
+      <div class="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div>
+          <p class="eyebrow mb-4 flex items-center gap-2" data-reveal>
+            <span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-cyan opacity-60 motion-reduce:animate-none"></span><span class="relative size-2 rounded-full bg-cyan"></span></span>
+            Progress blog · fresh from the team
+          </p>
+          <h2 id="journal-title" class="title-serif text-4xl md:text-6xl" data-reveal>Latest from <em>the journal.</em></h2>
+        </div>
+        <a href="/blog" class="btn-gold shrink-0" data-reveal>All {postCount} posts <Icon name="arrow-right" class="size-4" /></a>
+      </div>
+      <FeaturedPosts posts={posts} />
+    </div>
+  </section>
+
   <!-- ============================== CONCEPT ============================== -->
   <section id="concept" class="container-page scroll-mt-24 py-24 md:py-32">
     <div class="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-20">
@@ -148,7 +169,6 @@ const pillars = [
           <p class="eyebrow mb-4" data-reveal>Our vision</p>
           <h2 class="title-serif text-4xl md:text-6xl" data-reveal>Three promises to <em>every student.</em></h2>
         </div>
-        <p class="lead max-w-md" data-reveal>From the conclusion of our Engage phase presentation.</p>
       </div>
       <Promises />
     </div>
@@ -196,17 +216,6 @@ const pillars = [
     </section>
   )}
 
-  <!-- ============================== BLOG ============================== -->
-  <section class="container-page pb-24 md:pb-32">
-    <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-      <SectionTitle eyebrow="Progress blog" title="Latest from" accent="the journal." class="!mb-0" />
-      <a href="/blog" class="btn-ghost shrink-0" data-reveal>All posts <Icon name="arrow-right" class="size-4" /></a>
-    </div>
-    <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {posts.map((post) => <PostCard post={post} />)}
-    </div>
-  </section>
-
   <!-- ============================== TEAM TEASER ============================== -->
   <section class="container-page pb-24 md:pb-32">
     <div class="glass relative overflow-hidden p-8 md:p-14" data-reveal>
@@ -240,6 +249,32 @@ const pillars = [
       <p class="lead mt-5 max-w-xl" data-reveal>Our call-to-action video, the avatar demo and the results of the project — updated as we move through Investigate and Act.</p>
       <a href="/results" class="btn-gold mt-9" data-reveal><Icon name="play" class="size-4" /> Go to the demo</a>
     </div>
+  </section>
+
+  <!-- ============================== SDGs ============================== -->
+  <section class="container-page pt-24 md:pt-32" aria-labelledby="sdg-title">
+    <div class="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+      <div>
+        <p class="eyebrow mb-4" data-reveal>Sustainable Development Goals</p>
+        <h2 id="sdg-title" class="title-serif text-4xl md:text-5xl" data-reveal>The goals <em>we serve.</em></h2>
+      </div>
+      <a href="/theme" class="btn-ghost shrink-0" data-reveal>Why these goals <Icon name="arrow-right" class="size-4" /></a>
+    </div>
+    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {sdgs.map((g) => (
+        <li class:list={['glass glass-hover relative flex flex-col p-5', g.main && '!border-gold/60']} data-reveal data-tilt="6">
+          {g.main && <span class="absolute -top-3 right-5 rounded-full bg-gold px-3 py-1 font-label text-[0.65rem] font-bold tracking-widest text-navy uppercase">Main goal</span>}
+          <div class="flex items-center gap-4">
+            <Image src={g.img} alt={`SDG ${g.n} icon`} width={160} class="size-20 shrink-0 rounded-2xl object-cover" />
+            <div>
+              <p class="font-label text-xs font-bold tracking-widest text-gold uppercase">SDG {g.n}</p>
+              <h3 class="font-display text-lg leading-snug text-ink">{g.name}</h3>
+            </div>
+          </div>
+          <p class="mt-4 text-sm leading-relaxed text-mist">{g.link}</p>
+        </li>
+      ))}
+    </ul>
   </section>
 
   <!-- ============================== LOGOS ============================== -->

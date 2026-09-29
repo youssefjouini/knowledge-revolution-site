@@ -10,7 +10,7 @@ import { cblPhases } from '@/data/site';
 import bigIdeaImg from '@/assets/images/engage/big-idea-knowledge-revolution.png';
 import questionImg from '@/assets/images/engage/essential-question.jpg';
 import challengeImg from '@/assets/images/engage/the-challenge.png';
-import diagram from '@/assets/images/engage/cbl-engage-phase-diagram.png';
+import wheel from '@/assets/images/engage/cbl-framework-wheel.png';
 
 async function img(src: ImageMetadata, alt: string) {
   const r = await getImage({ src, widths: [480, 800], width: 800 });
@@ -32,6 +32,13 @@ const data: CblData = {
   investigate,
   act,
 };
+
+/** Colours and steps taken from the CBL framework wheel. */
+const framework = [
+  { name: 'Engage', color: '#C0431F', text: 'Through essential questioning, learners move from a big idea to a concrete and actionable challenge.', steps: ['Big Idea', 'Essential Question', 'Challenge'] },
+  { name: 'Investigate', color: '#4A7A16', text: 'Learners plan and take part in a journey that builds the foundation for solutions.', steps: ['Guiding Questions', 'Guiding Activities & Resources', 'Analysis'] },
+  { name: 'Act', color: '#11707D', text: 'Evidence-based solutions are developed, implemented with an authentic audience, and the results evaluated.', steps: ['Solution', 'Implementation', 'Evaluation'] },
+];
 
 const phases = [
   { name: 'Engage', text: 'From a Big Idea to an Essential Question, then to a concrete, actionable Challenge.' },
@@ -61,22 +68,71 @@ const phases = [
 
   <section class="border-y border-white/6 bg-night/40 py-24 md:py-32">
     <div class="container-page">
-      <SectionTitle eyebrow="Interactive journey" title="Follow our path" accent="phase by phase." lead="Select a phase to explore it. Engage is complete; Investigate is under way." />
+      <SectionTitle eyebrow="Interactive journey" title="Follow our path" accent="phase by phase." lead="Select a phase to explore it. Engage is complete, Investigate is under way — Act unlocks next." />
       <CblJourney client:visible data={data} />
     </div>
   </section>
 
-  <section class="container-page py-24 md:py-32">
-    <SectionTitle eyebrow="From the Engage presentation" title="The CBL" accent="process." />
-    <figure class="overflow-hidden rounded-3xl bg-white p-4 md:p-8" data-reveal>
-      <Image src={diagram} alt="CBL process diagram: 1 Engage, 2 Investigate, 3 Act. The Engage phase contains 01 The Big Idea, 02 The Essential Question and 03 The Challenge." widths={[640, 1024, 1536]} sizes="(min-width: 1280px) 1216px, 100vw" class="mx-auto w-full max-w-4xl" />
-    </figure>
+  <section class="on-cream relative overflow-hidden py-24 md:py-32">
+    <div class="container-page grid items-center gap-14 lg:grid-cols-[1fr_1.1fr]">
+      <!-- The CBL wheel -->
+      <div class="relative mx-auto w-full max-w-md" data-reveal>
+        <div class="absolute inset-6 rounded-full bg-gold/25 blur-3xl" aria-hidden="true"></div>
+        <div class="cbl-orbit absolute -inset-4 rounded-full border-2 border-dashed border-navy/15" aria-hidden="true"></div>
+        <div class="relative rounded-full bg-white p-3 shadow-[0_30px_80px_-30px_rgb(16_27_64/0.45)] ring-1 ring-navy/10">
+          <Image src={wheel} alt="The Challenge Based Learning framework: Engage (Big Idea, Essential Question, Challenge), Investigate (Guiding Questions, Guiding Activities and Resources, Analysis) and Act (Solution, Implementation, Evaluation), surrounded by Document, Reflect, Share." width={400} height={400} class="w-full" />
+        </div>
+      </div>
+
+      <!-- Explanation -->
+      <div>
+        <p class="eyebrow mb-4" data-reveal>The framework</p>
+        <h2 class="title-serif text-4xl md:text-5xl" data-reveal>The CBL <em>process.</em></h2>
+        <p class="lead mt-5" data-reveal>Three phases, each with its own steps — from a big idea to a solution tested with a real audience.</p>
+
+        <ol class="mt-10 space-y-4">
+          {framework.map((f, i) => (
+            <li class="flex gap-5 rounded-3xl border border-navy/10 bg-white/60 p-5 shadow-[0_20px_40px_-30px_rgb(16_27_64/0.5)]" data-reveal data-tilt="4">
+              <span class="flex size-12 shrink-0 items-center justify-center rounded-2xl font-label text-lg font-extrabold text-white" style={`background:${f.color}`}>{i + 1}</span>
+              <div class="min-w-0">
+                <h3 class="font-label text-lg font-extrabold tracking-wider uppercase" style={`color:${f.color}`}>{f.name}</h3>
+                <p class="mt-1 text-sm text-navy/75">{f.text}</p>
+                <ul class="mt-3 flex flex-wrap gap-2">
+                  {f.steps.map((st) => (
+                    <li class="rounded-full border px-3 py-1 font-label text-xs font-semibold text-navy" style={`border-color:${f.color}55; background:${f.color}14`}>{st}</li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <p class="mt-8 flex flex-wrap items-center gap-3 font-label text-xs font-bold tracking-[0.25em] text-navy/70 uppercase" data-reveal>
+          <span class="h-px w-8 bg-navy/30"></span> Throughout the journey:
+          <span class="text-gold-deep">Document</span> · <span class="text-gold-deep">Reflect</span> · <span class="text-gold-deep">Share</span>
+        </p>
+      </div>
+    </div>
   </section>
 </BaseLayout>
 
 <style is:global>
   @media (prefers-reduced-motion: no-preference) {
+    .cbl-orbit { animation: cblSpin 60s linear infinite; }
+    @keyframes cblSpin { to { transform: rotate(360deg); } }
     .cbl-fade { animation: cblFade 0.6s var(--ease-out-expo); }
+
+    /* Engage tree: root → trunk → branches → nodes */
+    .cbl-tree .tree-root { animation: treeRoot 0.5s var(--ease-out-expo) both; }
+    .cbl-tree .tree-trunk { transform-origin: top; animation: treeTrunk 0.7s 0.25s var(--ease-out-expo) both; }
+    .cbl-tree .tree-branch { transform-origin: left; animation: treeBranch 0.45s var(--ease-out-expo) both; animation-delay: calc(0.45s + var(--i) * 0.2s); }
+    .cbl-tree .tree-dot { animation: treeDot 0.4s var(--ease-out-expo) both; animation-delay: calc(0.4s + var(--i) * 0.2s); }
+    .cbl-tree .tree-node { animation: treeNode 0.6s var(--ease-out-expo) both; animation-delay: calc(0.6s + var(--i) * 0.2s); }
+    @keyframes treeRoot { from { opacity: 0; transform: translateY(-10px) scale(0.9); } }
+    @keyframes treeTrunk { from { transform: scaleY(0); } }
+    @keyframes treeBranch { from { transform: scaleX(0); } }
+    @keyframes treeDot { from { opacity: 0; transform: translateY(-50%) scale(0); } }
+    @keyframes treeNode { from { opacity: 0; transform: translateX(-16px); } }
     @keyframes cblFade { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
   }
 </style>

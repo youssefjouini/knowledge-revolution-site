@@ -3,8 +3,8 @@ title: "Engage Phase: The Challenge Is Set"
 date: 2026-09-29   # [TODO] mettre la vraie date de la présentation Engage
 category: CBL
 tags: [engage, cbl, knowledge-revolution]
-cover: ../../assets/images/engage/the-challenge.png
-coverAlt: "A student with headphones learning face to face with a teacher on a laptop, next to the text of our Challenge."
+cover: ../../assets/images/blog/progress-blog-cover.jpg
+coverAlt: "Illustration of students learning on laptops around a large screen, surrounded by flying books and a graduation cap."
 excerpt: "We presented the Engage phase of our Deep Learning project: our Big Idea, our Essential Question and our Challenge."
 ---
 

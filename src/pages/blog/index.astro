@@ -1,46 +1,286 @@
 ---
-import { getImage } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import PageHeader from '@/components/ui/PageHeader.astro';
-import BlogExplorer, { type PostSummary } from '@/components/features/BlogExplorer';
+import Icon from '@/components/ui/Icon.astro';
+import Journal from '@/components/journal/Journal';
+import type { JournalItem } from '@/components/journal/types';
+import { colorOf } from '@/components/journal/types';
 import { blogCategories } from '@/content.config';
 import { formatDate, readingTime } from '@/lib/utils';
+import { site } from '@/data/site';
 
-const entries = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+/** Markdown → plain lowercase text for the search. */
+const plain = (md = '') => md.replace(/[#>*_`~\[\]()!|-]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().slice(0, 4000);
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const meetings = (await getCollection('meetings', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
 
-const posts: PostSummary[] = await Promise.all(
-  entries.map(async (e) => {
-    const cover = e.data.cover
-      ? await getImage({ src: e.data.cover, widths: [400, 720], width: 720 })
-      : null;
-    return {
-      id: e.id,
-      title: e.data.title,
-      date: e.data.date.toISOString(),
-      dateLabel: formatDate(e.data.date),
-      category: e.data.category,
-      tags: e.data.tags,
-      excerpt: e.data.excerpt,
-      readingTime: readingTime(e.body),
-      cover: cover
-        ? { src: cover.src, srcSet: cover.srcSet.attribute, width: Number(cover.attributes.width), height: Number(cover.attributes.height) }
-        : null,
-      coverAlt: e.data.coverAlt ?? '',
-    };
-  }),
-);
+const items: JournalItem[] = [
+  ...(await Promise.all(
+    posts.map(async (p) => {
+      const img = p.data.cover ? await getImage({ src: p.data.cover, widths: [480, 800], width: 800 }) : null;
+      return {
+        kind: 'post' as const,
+        id: p.id,
+        href: `/blog/${p.id}`,
+        title: p.data.title,
+        excerpt: p.data.excerpt,
+        date: p.data.date.toISOString(),
+        day: String(p.data.date.getUTCDate()),
+        month: MONTHS[p.data.date.getUTCMonth()],
+        dateLabel: formatDate(p.data.date),
+        category: p.data.category,
+        tags: p.data.tags,
+        readingTime: readingTime(p.body),
+        text: plain(p.body),
+        cover: img ? { src: img.src, srcSet: img.srcSet.attribute, width: Number(img.attributes.width), height: Number(img.attributes.height) } : null,
+        coverAlt: p.data.coverAlt ?? '',
+      };
+    }),
+  )),
+  ...meetings.map((m) => ({
+    kind: 'meeting' as const,
+    id: m.id,
+    href: `/meetings/${m.id}`,
+    title: m.data.title,
+    excerpt: m.data.summary ?? '',
+    date: m.data.date.toISOString(),
+    day: String(m.data.date.getUTCDate()),
+    month: MONTHS[m.data.date.getUTCMonth()],
+    dateLabel: formatDate(m.data.date),
+    category: 'Meeting',
+    tags: [],
+    readingTime: readingTime(m.body),
+    text: plain(m.body),
+    cover: null,
+    coverAlt: '',
+  })),
+];
+
+// Real numbers, computed from the content
+const cover = posts[0];
+const totalMinutes = posts.reduce((s, p) => s + readingTime(p.body), 0);
+const dates = items.map((i) => new Date(i.date).valueOf());
+const weeks = dates.length ? Math.max(1, Math.ceil((Math.max(...dates) - Math.min(...dates) + 86400000) / (7 * 86400000))) : 0;
+const lastUpdate = cover ? formatDate(cover.data.date) : '';
+const stats = [
+  { value: posts.length, label: 'posts' },
+  { value: meetings.length, label: 'meetings on record' },
+  { value: totalMinutes, label: 'minutes of reading' },
+  { value: weeks, label: weeks > 1 ? 'weeks on the journey' : 'week on the journey' },
+];
+const title = 'Journal';
 ---
-<BaseLayout title="Progress Blog" description="The progress blog of The Knowledge Revolution: the project, the story of learning, the team behind the scenes and our CBL journey.">
-  <PageHeader
-    eyebrow="Progress blog"
-    title="Our journey,"
-    accent="post by post."
-    lead="The project, the story of how humanity learned to learn, our community, and what happens behind the scenes — week by week."
-  />
-  <section class="container-page pb-24 md:pb-32">
-    <BlogExplorer client:visible posts={posts} categories={[...blogCategories]} />
+<BaseLayout title="Progress Blog" description="The Journal of The Knowledge Revolution: our CBL journey, week by week — the project, the story of learning, meetings and behind the scenes.">
+  <!-- ============================== MASTHEAD ============================== -->
+  <section id="masthead" class="masthead relative isolate overflow-hidden pt-28 md:pt-32">
+    <div class="masthead-aurora pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></div>
+    <div class="masthead-spot pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></div>
+
+    <div class="container-page">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-y border-white/15 py-3 font-label text-[0.68rem] font-semibold tracking-[0.25em] text-mist uppercase">
+        <span>The Knowledge Revolution <span class="text-gold">✦</span> Progress Journal</span>
+        <span class="hidden md:inline">By {site.team} — {site.teamLong}</span>
+        <span>Issue Nº {String(posts.length).padStart(2, '0')} · Updated {lastUpdate}</span>
+      </div>
+
+      <h1 class="pt-8 pb-[0.2em] leading-[0.8] md:pt-10 lg:pb-12">
+        <span class="block font-display text-3xl text-mist italic md:text-5xl">The</span>
+        <span class="masthead-title block font-display text-[clamp(5rem,21vw,17.5rem)] font-medium tracking-[-0.045em] whitespace-nowrap text-ink" style="padding-bottom:0.1em">
+          <span class="sr-only">{title}</span>
+          {title.split('').map((ch, i) => (
+            <span class="mh-letter inline-block" style={`--d:${i * 70 + 150}ms`} aria-hidden="true">{ch}</span>
+          ))}
+          <span class="mh-letter inline-block text-gold italic" style={`--d:${title.length * 70 + 150}ms`} aria-hidden="true">.</span>
+        </span>
+      </h1>
+      <div class="grid items-end gap-8 border-t border-white/10 py-8 md:py-10 lg:grid-cols-[1fr_1.2fr]" data-reveal>
+        <p class="max-w-xl text-lg leading-relaxed text-mist">
+          Our Challenge Based Learning journey, written <em class="font-display text-gold">week by week</em> — from a big idea to a real solution. Posts, meetings and behind the scenes, all in one place.
+        </p>
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
+          {stats.map((s) => (
+            <div class="border-l-2 border-gold/60 pl-4">
+              <dt class="sr-only">{s.label}</dt>
+              <dd>
+                <span class="block font-label text-4xl font-extrabold text-ink" data-count={s.value}>{s.value}</span>
+                <span class="font-label text-[0.68rem] tracking-[0.18em] text-mist uppercase">{s.label}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============================== COVER STORY ============================== -->
+  {cover && (
+    <section class="container-page py-20 md:py-28" aria-labelledby="cover-title">
+      <div class="grid items-center gap-8 lg:grid-cols-[1.25fr_1fr]">
+        <a href={`/blog/${cover.id}`} class="cover-media group relative block aspect-[16/11] overflow-hidden rounded-[2rem] border border-white/10" data-parallax tabindex="-1" aria-hidden="true">
+          {cover.data.cover && (
+            <Image src={cover.data.cover} alt="" widths={[640, 1000, 1400]} sizes="(min-width: 1024px) 720px, 100vw" class="cover-img size-full scale-110 object-cover transition-[filter] duration-700 group-hover:saturate-150" />
+          )}
+          <span class="absolute inset-0 bg-gradient-to-tr from-navy-950/70 via-transparent to-transparent"></span>
+          <span class="absolute top-5 left-5 flex items-center gap-2 rounded-full bg-gold px-4 py-1.5 font-label text-[0.7rem] font-extrabold tracking-[0.2em] text-navy uppercase">
+            <span class="size-1.5 animate-pulse rounded-full bg-navy motion-reduce:animate-none"></span> Cover story
+          </span>
+        </a>
+        <div class="relative z-10 lg:-ml-28" data-reveal>
+          <div class="glass !bg-navy/85 p-7 md:p-10">
+            <p class="flex flex-wrap items-center gap-3 font-label text-xs text-mist">
+              <span class="font-bold tracking-wider uppercase" style={`color:${colorOf(cover.data.category)}`}>{cover.data.category}</span>
+              <span>{formatDate(cover.data.date)}</span>
+              <span>· {readingTime(cover.body)} min read</span>
+            </p>
+            <h2 id="cover-title" class="title-serif mt-4 text-4xl md:text-5xl">{cover.data.title}</h2>
+            <p class="lead mt-4 !text-lg">{cover.data.excerpt}</p>
+            <a href={`/blog/${cover.id}`} class="btn-gold mt-8" data-magnetic>
+              Read the cover story <Icon name="arrow-right" class="size-4" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ============================== THE JOURNAL (interactive) ============================== -->
+  <section class="container-page pb-24 md:pb-32" aria-labelledby="explore-title">
+    <div class="mb-4 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+      <div>
+        <p class="eyebrow mb-3" data-reveal>Explore the journal</p>
+        <h2 id="explore-title" class="title-serif text-4xl md:text-6xl" data-reveal>Every step, <em>three ways to read it.</em></h2>
+      </div>
+      <p class="max-w-sm text-sm text-mist" data-reveal>Follow the <strong class="text-ink">timeline</strong>, scan the <strong class="text-ink">index</strong>, or wander through the <strong class="text-ink">knowledge map</strong>.</p>
+    </div>
+    <Journal client:load items={items} categories={[...blogCategories]} currentPhase={site.currentPhase} />
+  </section>
+
+  <!-- ============================== FOLLOW ============================== -->
+  <section class="container-page">
+    <div class="follow relative overflow-hidden rounded-[2.5rem] border border-white/10 p-10 text-center md:p-16" data-reveal>
+      <div class="follow-glow pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></div>
+      <p class="eyebrow mb-4">Behind the scenes, week by week</p>
+      <h2 class="title-serif mx-auto max-w-3xl text-4xl md:text-6xl">Never miss <em>a chapter.</em></h2>
+      <p class="lead mx-auto mt-4 max-w-xl">Follow the team on Instagram for the stories between the posts.</p>
+      <a href={site.instagram.url} target="_blank" rel="noopener" class="btn-gold mt-8" data-magnetic>
+        <Icon name="instagram" class="size-4" /> {site.instagram.handle}
+        <span class="sr-only">(opens in a new tab)</span>
+      </a>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  /* Masthead: slow aurora + cursor spotlight */
+  .masthead-aurora {
+    background:
+      radial-gradient(40rem 22rem at 15% 30%, rgb(232 169 58 / 0.14), transparent 70%),
+      radial-gradient(36rem 24rem at 85% 20%, rgb(92 225 230 / 0.14), transparent 70%),
+      radial-gradient(30rem 20rem at 60% 90%, rgb(255 154 92 / 0.08), transparent 70%);
+    animation: aurora 18s ease-in-out infinite alternate;
+  }
+  @keyframes aurora {
+    to { transform: translate3d(3%, 4%, 0) scale(1.08); }
+  }
+  .masthead-spot {
+    background: radial-gradient(26rem circle at var(--mx, 70%) var(--my, 30%), rgb(255 255 255 / 0.06), transparent 60%);
+  }
+
+  /* Big letters rising one by one */
+  .mh-letter {
+    animation: letterUp 1s var(--ease-out-expo) both;
+    animation-delay: var(--d);
+  }
+  @keyframes letterUp {
+    from { opacity: 0; transform: translateY(0.5em) rotate(6deg); filter: blur(8px); }
+  }
+
+  /* Cover story reveal */
+  .cover-media {
+    clip-path: inset(0 0 0 0 round 2rem);
+    animation: coverReveal 1.4s 0.3s var(--ease-out-expo) both;
+  }
+  @keyframes coverReveal {
+    from { clip-path: inset(0 100% 0 0 round 2rem); }
+  }
+  .cover-img { transition: transform 0.6s var(--ease-out-expo), filter 0.7s; }
+
+  .follow-glow {
+    background:
+      radial-gradient(30rem 18rem at 20% 0%, rgb(232 169 58 / 0.2), transparent 70%),
+      radial-gradient(30rem 18rem at 80% 100%, rgb(92 225 230 / 0.18), transparent 70%),
+      linear-gradient(160deg, var(--color-navy), var(--color-night));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .masthead-aurora, .mh-letter, .cover-media { animation: none !important; }
+  }
+</style>
+
+<style is:global>
+  /* ---------- Journal island ---------- */
+  .jr-reveal { transition: opacity 0.8s var(--ease-out-expo), transform 0.9s var(--ease-out-expo); }
+  .jr-ready .jr-reveal:not(.is-in) { opacity: 0; }
+  .jr-ready .jr-reveal.from-left:not(.is-in) { transform: translateX(-48px); }
+  .jr-ready .jr-reveal.from-right:not(.is-in) { transform: translateX(48px); }
+  .jr-ready .jr-reveal.from-below:not(.is-in) { transform: translateY(28px); }
+  @media (max-width: 767px) {
+    .jr-ready .jr-reveal.from-left:not(.is-in) { transform: translateX(32px); }
+  }
+  .journal-view { animation: viewIn 0.7s var(--ease-out-expo); }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(18px); filter: blur(6px); } }
+  .tl-card:hover { border-color: color-mix(in srgb, var(--c) 55%, transparent); box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--c) 60%, transparent); }
+  .tl-marker { transition: transform 0.5s var(--ease-out-expo); }
+  li:hover > div > .tl-marker { transform: scale(1.12); }
+  @media (prefers-reduced-motion: reduce) {
+    .jr-reveal, .journal-view { transition: none !important; animation: none !important; transform: none !important; opacity: 1 !important; }
+  }
+</style>
+
+<script>
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  // Cursor spotlight on the masthead
+  const mast = document.getElementById('masthead');
+  if (mast && fine && !reduced) {
+    mast.addEventListener('pointermove', (e) => {
+      const r = mast.getBoundingClientRect();
+      mast.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      mast.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  }
+
+  // Cover image follows the mouse (parallax)
+  document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((box) => {
+    const img = box.querySelector<HTMLElement>('.cover-img');
+    if (!img || !fine || reduced) return;
+    box.addEventListener('pointermove', (e) => {
+      const r = box.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      img.style.transform = `scale(1.12) translate(${-x * 18}px, ${-y * 18}px)`;
+    });
+    box.addEventListener('pointerleave', () => (img.style.transform = ''));
+  });
+
+  // Magnetic buttons
+  document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((btn) => {
+    if (!fine || reduced) return;
+    btn.style.transition = 'transform .4s cubic-bezier(.16,1,.3,1)';
+    btn.addEventListener('pointermove', (e) => {
+      const r = btn.getBoundingClientRect();
+      btn.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.25}px, ${(e.clientY - r.top - r.height / 2) * 0.35}px)`;
+    });
+    btn.addEventListener('pointerleave', () => (btn.style.transform = ''));
+  });
+</script>

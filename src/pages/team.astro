@@ -29,7 +29,7 @@ const members = (await getCollection('team')).sort((a, b) => a.data.order - b.da
         return (
           <li class="glass glass-hover group overflow-hidden" data-reveal data-tilt="7">
             <div class="relative aspect-[4/5] overflow-hidden bg-navy-700">
-              <Image src={photo} alt={`Portrait of ${name}`} widths={[280, 420]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" class="size-full object-cover object-top transition duration-700 group-hover:scale-105" />
+              <Image src={photo} alt={`Portrait of ${name}`} widths={[320, 480, 640]} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" class="size-full object-cover object-top transition duration-700 group-hover:scale-105" />
               <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy via-navy/60 to-transparent"></div>
               <div class="absolute inset-x-0 bottom-0 p-6" style="transform: translateZ(40px)">
                 <h3 class="font-display text-2xl text-ink">{name}</h3>
