@@ -21,6 +21,15 @@ const keyFigures = [
   { value: 4, label: 'Sustainable Development Goals targeted' },
 ];
 
+/** Investigate phase in numbers (from the consolidated report). */
+const investigateFigures = [
+  { value: 26, label: 'tools compared on documented evidence' },
+  { value: 7, label: 'tools tested hands-on' },
+  { value: 24, label: 'guiding activities planned' },
+  { value: 42, label: 'references in the techniques review' },
+  { value: 97, label: 'pages in the Investigate report' },
+];
+
 ---
 <BaseLayout title="Results & Demo" description="Videos, key figures and upcoming results of The Knowledge Revolution project.">
   <PageHeader
@@ -85,6 +94,7 @@ const keyFigures = [
   <!-- Key figures -->
   <section class="container-page py-24 md:py-32">
     <SectionTitle eyebrow="Key figures" title="The project" accent="so far." />
+    <p class="eyebrow mb-4 !text-gold" data-reveal>Engage phase</p>
     <ul class="grid grid-cols-2 gap-4 md:grid-cols-5">
       {keyFigures.map((k) => (
         <li class="stat-card pt-12" data-reveal>
@@ -93,6 +103,16 @@ const keyFigures = [
         </li>
       ))}
     </ul>
+    <p class="eyebrow mt-12 mb-4" data-reveal>Investigate phase</p>
+    <ul class="grid grid-cols-2 gap-4 md:grid-cols-5">
+      {investigateFigures.map((k) => (
+        <li class="stat-card pt-12" data-reveal>
+          <p class="font-label text-5xl font-extrabold text-cyan"><span data-count={k.value}>{k.value}</span></p>
+          <p class="mt-3 text-sm text-ink/85">{k.label}</p>
+        </li>
+      ))}
+    </ul>
+    <a href="/cbl#investigate-report" class="mt-8 inline-flex items-center gap-2 font-label text-sm font-semibold text-cyan hover:text-ink" data-reveal>Read what the investigation revealed <Icon name="arrow-right" class="size-4" /></a>
   </section>
 
   <!-- Promises -->

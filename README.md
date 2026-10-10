@@ -60,6 +60,7 @@ npm run build      # doit se terminer par « Complete! » sans erreur rouge
 | Email, liens vidéo, audio, phase CBL actuelle | `src/data/site.ts` |
 | Pipeline, modèles, datasets, métriques | `src/data/methodology.ts` |
 | Contenu des phases Investigate / Act | `src/data/cbl.ts` |
+| Rapport Investigate (onglet Investigate de `/cbl`) | `src/data/investigate.ts` · PDF dans `public/docs/` |
 | Les images | `src/assets/images/` |
 | Le modèle 3D, les fichiers audio | `public/models/`, `public/audio/` |
 | Le texte d'une page | `src/pages/nom-de-la-page.astro` |

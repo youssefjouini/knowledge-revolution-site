@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 
 type Img = { src: string; srcSet?: string; width: number; height: number; alt: string };
 type Status = 'done' | 'current' | 'upcoming';
@@ -68,11 +68,27 @@ function Block({ label, title, children }: { label: string; title: string; child
   );
 }
 
-export default function CblJourney({ data }: { data: CblData }) {
+/** `investigate` = optional content passed from Astro (named slot) and shown in the Investigate tab. */
+export default function CblJourney({ data, investigate }: { data: CblData; investigate?: ReactNode }) {
   const initial = TABS.find((t) => data.statuses[t] === 'current') ?? 'Engage';
   const [tab, setTab] = useState<(typeof TABS)[number]>(initial);
   const [engageStep, setEngageStep] = useState(0);
   const [treeKey, setTreeKey] = useState(0); // bumps on each click on Engage → replays the tree animation
+
+  // A link such as /cbl#inv-tools opens the tab that contains the target
+  useEffect(() => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    const target = document.getElementById(id);
+    const panel = target?.closest('[role="tabpanel"]');
+    if (!target || !panel) return;
+    const phase = panel.id.replace('panel-', '') as (typeof TABS)[number];
+    if (TABS.includes(phase) && data.statuses[phase] !== 'upcoming') {
+      setTab(phase);
+      requestAnimationFrame(() => target.scrollIntoView());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Upcoming phases are locked: not clickable, skipped by the keyboard
@@ -220,11 +236,13 @@ export default function CblJourney({ data }: { data: CblData }) {
       </div>
 
       {/* INVESTIGATE */}
-      <div role="tabpanel" id="panel-Investigate" aria-labelledby="tab-Investigate" hidden={tab !== 'Investigate'} className="mt-10">
+      <div role="tabpanel" id="panel-Investigate" aria-labelledby="tab-Investigate" hidden={tab !== 'Investigate'} className="cbl-panel mt-10">
         <p className="title-serif text-3xl md:text-5xl">
           “The challenge is set. <em>Now we investigate.</em>”
         </p>
-        {investigateBlocks.length ? (
+        {investigate ? (
+          <div className="mt-10">{investigate}</div>
+        ) : investigateBlocks.length ? (
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {investigateBlocks.map((b, i) => (
               <Block key={b.title} label={`0${i + 1}`} title={b.title}>

@@ -25,7 +25,7 @@ const members = (await getCollection('team')).sort((a, b) => a.data.order - b.da
     <SectionTitle eyebrow="The team" title="The people building" accent="the project." />
     <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {members.map((m) => {
-        const { name, photo, role, linkedin, github, email } = m.data;
+        const { name, photo, role, investigate, linkedin, github, email } = m.data;
         return (
           <li class="glass glass-hover group overflow-hidden" data-reveal data-tilt="7">
             <div class="relative aspect-[4/5] overflow-hidden bg-navy-700">
@@ -34,6 +34,7 @@ const members = (await getCollection('team')).sort((a, b) => a.data.order - b.da
               <div class="absolute inset-x-0 bottom-0 p-6" style="transform: translateZ(40px)">
                 <h3 class="font-display text-2xl text-ink">{name}</h3>
                 {role ? <p class="mt-1 font-label text-sm text-gold">{role}</p> : <Todo class="mt-2">Role</Todo>}
+                {investigate && <p class="mt-2 inline-flex items-center gap-1.5 rounded-full border border-cyan/40 bg-navy/70 px-2.5 py-1 font-label text-[0.68rem] font-semibold text-cyan backdrop-blur"><span class="size-1.5 rounded-full bg-cyan"></span>Investigate · {investigate.replace(/^Part [0-9AB]+ · /, '')}</p>}
               </div>
             </div>
             <div class="flex items-center gap-2 p-5">

@@ -6,6 +6,7 @@
  * Empty lists are shown on the site as [TODO].
  */
 import { bigIdea, challenge, essentialQuestion, closingLine } from './site';
+import { guidingQuestions, activities, resources, headline } from './investigate';
 
 export const engage = {
   bigIdea,
@@ -23,15 +24,17 @@ export const engage = {
 
 export const investigate = {
   quote: closingLine,
-  /** [TODO] Guiding questions, e.g. 'Which voices can we legally use?' */
-  guidingQuestions: [] as string[],
-  /** [TODO] Guiding activities (interviews, surveys, benchmarks, experiments…) */
-  activities: [] as string[],
-  /** [TODO] Guiding resources (papers, courses, tools, experts…) */
-  resources: [] as string[],
-  /** [TODO] Synthesis of what we learned (a short paragraph) */
-  synthesis: null as string | null,
+  /** Plan-level Guiding Questions of the Investigate report (Table 1.6). */
+  guidingQuestions: guidingQuestions.slice(0, 6).map((g) => g.q),
+  /** 24 guiding activities across the five CBL types (Part 4). */
+  activities: activities.map((a) => `${a.count} ${a.type.toLowerCase()} — ${a.examples}`),
+  /** Guiding resources, by CBL type (Part 4). */
+  resources: resources.map((r) => `${r.type}: ${r.examples}`),
+  /** Synthesis (Part 6). */
+  synthesis: headline as string | null,
 };
+// The full report content of the Investigate tab is in src/components/features/InvestigateReport.astro
+// (data: src/data/investigate.ts).
 
 export const act = {
   /** [TODO] The solution concept */

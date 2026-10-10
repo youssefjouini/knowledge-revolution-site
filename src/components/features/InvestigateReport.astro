@@ -1,0 +1,411 @@
+---
+/**
+ * Content of the "Investigate" tab of the CBL journey (/cbl).
+ * Organised by the CBL Investigate steps: Guiding Questions → Guiding Activities & Resources → Analysis & Synthesis.
+ * Data: src/data/investigate.ts (from the consolidated Investigate report).
+ * No scroll animations here: this content lives inside a React island (named slot).
+ */
+import Icon from '@/components/ui/Icon.astro';
+import {
+  report,
+  centralProblem,
+  headline,
+  parts,
+  keyFigures,
+  schema,
+  guidingQuestions,
+  coverage,
+  toolMatrix,
+  activities,
+  resources,
+  legal,
+  themes,
+  conclusions,
+  objectiveTree,
+  nextSteps,
+  globalParagraph,
+} from '@/data/investigate';
+
+const accent = { gold: 'text-gold', cyan: 'text-cyan', coral: 'text-coral', ink: 'text-ink' };
+const totalActivities = activities.reduce((s, a) => s + a.count, 0);
+const maxActivities = Math.max(...activities.map((a) => a.count));
+const totalGQ = coverage.covered + coverage.partial + coverage.pending;
+const cellLabel = ['Not covered', 'Partly covered', 'Covered'];
+
+const steps = [
+  { id: 'investigate-report', label: 'Overview' },
+  { id: 'inv-questions', label: '01 · Guiding questions' },
+  { id: 'inv-activities', label: '02 · Activities & resources' },
+  { id: 'inv-analysis', label: '03 · Analysis & synthesis' },
+  { id: 'inv-tree', label: 'Objective tree' },
+  { id: 'inv-next', label: 'Next steps' },
+];
+---
+<div id="investigate-report" class="inv scroll-mt-40">
+  <!-- ============ OVERVIEW ============ -->
+  <div class="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
+    <div class="glass p-7 md:p-9">
+      <p class="eyebrow !text-gold mb-3">Consolidated report · {report.version} · {report.pages} pages</p>
+      <p class="font-display text-2xl leading-snug text-ink md:text-3xl">{headline}</p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a href={report.pdf} class="btn-gold" download>
+          <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></svg>
+          Download the report (PDF, 7.6 MB)
+        </a>
+        <a href="#inv-tree" class="btn-ghost">See the objective tree</a>
+      </div>
+      <p class="mt-6 text-xs text-mist">Reference platform: {report.referencePlatform} · partner: {report.partner}</p>
+    </div>
+    <ol class="grid gap-2.5">
+      {parts.map((p) => (
+        <li class="flex items-center gap-4 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3">
+          <span class="font-label text-2xl font-extralight" style={`color:${p.color}`}>{p.n}</span>
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-semibold text-ink">{p.title}</span>
+            <span class="block font-label text-[0.7rem] font-semibold tracking-wider uppercase" style={`color:${p.color}`}>{p.owner}</span>
+          </span>
+          <span class:list={['chip shrink-0 !px-2 !py-0.5 !text-[0.65rem]', p.status === 'Complete' ? '!border-cyan/40 !text-cyan' : '!border-gold/40 !text-gold']}>{p.status}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <!-- ============ STEP NAV ============ -->
+  <nav aria-label="Investigate steps" class="inv-steps sticky top-[4.5rem] z-20 -mx-4 mt-12 border-y border-white/8 bg-navy-950/90 px-4 backdrop-blur-xl sm:mx-0 sm:rounded-full sm:border sm:px-2">
+    <ul class="flex gap-1 overflow-x-auto py-2 [scrollbar-width:none]">
+      {steps.map((s) => (
+        <li class="shrink-0"><a href={`#${s.id}`} data-inv-step={s.id} class="inv-chip block rounded-full px-3.5 py-1.5 font-label text-xs font-semibold text-mist transition hover:text-ink">{s.label}</a></li>
+      ))}
+    </ul>
+  </nav>
+
+  <!-- ============ 01 · GUIDING QUESTIONS ============ -->
+  <section id="inv-questions" class="scroll-mt-40 pt-16" aria-labelledby="inv-questions-title">
+    <p class="eyebrow mb-3">Investigate · Step 01</p>
+    <h3 id="inv-questions-title" class="title-serif text-3xl md:text-5xl">Guiding <em>questions.</em></h3>
+    <p class="lead mt-4 max-w-3xl">Part 1 — written by the whole team — turned our challenge into a structured problem, then into questions to answer.</p>
+
+    <div class="mt-10 rounded-[2rem] bg-night p-7 ring-1 ring-gold/30 md:p-10">
+      <p class="eyebrow !text-gold mb-3">Central problem</p>
+      <p class="font-display text-2xl leading-snug text-ink md:text-[1.75rem]">{centralProblem}</p>
+    </div>
+
+    <div class="mt-6 grid items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr]">
+      <div class="rounded-[1.75rem] border border-[#5B8CFF]/40 bg-[#5B8CFF]/8 p-6">
+        <h4 class="mb-4 font-label text-sm font-extrabold tracking-[0.2em] text-[#8FB0FF] uppercase">Context</h4>
+        <ul class="space-y-2.5 text-sm text-ink/90">{schema.context.map((c) => <li class="flex gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full bg-[#8FB0FF]"></span>{c}</li>)}</ul>
+      </div>
+      <div class="flex items-center justify-center text-gold" aria-hidden="true"><Icon name="arrow-right" class="size-7 rotate-90 lg:rotate-0" /></div>
+      <div class="rounded-[1.75rem] border border-gold/40 bg-gold/8 p-6">
+        <h4 class="mb-4 font-label text-sm font-extrabold tracking-[0.2em] text-gold uppercase">Root causes</h4>
+        <ul class="space-y-2.5 text-sm text-ink/90">{schema.causes.map((c) => <li class="flex gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full bg-gold"></span>{c}</li>)}</ul>
+      </div>
+      <div class="flex items-center justify-center text-gold" aria-hidden="true"><Icon name="arrow-right" class="size-7 rotate-90 lg:rotate-0" /></div>
+      <div class="rounded-[1.75rem] border border-[#F0609E]/40 bg-[#F0609E]/8 p-6">
+        <h4 class="mb-4 font-label text-sm font-extrabold tracking-[0.2em] text-[#FF8DBD] uppercase">Impact</h4>
+        <ul class="space-y-2.5 text-sm text-ink/90">{schema.impact.map((c) => <li class="flex gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full bg-[#FF8DBD]"></span>{c}</li>)}</ul>
+      </div>
+    </div>
+
+    <div class="mt-10 grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+      <ol class="divide-y divide-white/8 border-y border-white/8">
+        {guidingQuestions.map((g) => (
+          <li class="flex gap-4 py-3.5">
+            <span class="w-14 shrink-0 font-label text-xs font-bold text-gold">{g.code}</span>
+            <span class="text-sm text-ink/90">{g.q}<span class="ml-2 font-label text-[0.65rem] tracking-wider text-mist uppercase">{g.area}</span></span>
+          </li>
+        ))}
+      </ol>
+      <div class="glass h-fit p-6">
+        <p class="eyebrow mb-4">Where the answers stand</p>
+        <div class="flex h-4 overflow-hidden rounded-full" role="img" aria-label={`Guiding Questions coverage: ${coverage.covered} covered, ${coverage.partial} partial, ${coverage.pending} pending.`}>
+          <span class="bg-cyan" style={`width:${(coverage.covered / totalGQ) * 100}%`}></span>
+          <span class="bg-gold" style={`width:${(coverage.partial / totalGQ) * 100}%`}></span>
+          <span class="bg-coral/80" style={`width:${(coverage.pending / totalGQ) * 100}%`}></span>
+        </div>
+        <dl class="mt-5 grid grid-cols-3 gap-3 text-center">
+          <div><dt class="font-label text-[0.65rem] tracking-wider text-mist uppercase">Covered</dt><dd class="font-label text-3xl font-extrabold text-cyan">{coverage.covered}</dd></div>
+          <div><dt class="font-label text-[0.65rem] tracking-wider text-mist uppercase">Partial</dt><dd class="font-label text-3xl font-extrabold text-gold">{coverage.partial}</dd></div>
+          <div><dt class="font-label text-[0.65rem] tracking-wider text-mist uppercase">Pending</dt><dd class="font-label text-3xl font-extrabold text-coral">{coverage.pending}</dd></div>
+        </dl>
+        <p class="mt-4 text-sm text-mist">{totalGQ} questions in total (plan level and module level). The pending ones need experimental results, not more desk research.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 · ACTIVITIES & RESOURCES ============ -->
+  <section id="inv-activities" class="scroll-mt-40 pt-20" aria-labelledby="inv-activities-title">
+    <p class="eyebrow mb-3">Investigate · Step 02</p>
+    <h3 id="inv-activities-title" class="title-serif text-3xl md:text-5xl">Guiding activities <em>& resources.</em></h3>
+    <p class="lead mt-4 max-w-3xl">{totalActivities} activities across the five CBL types (Part 4), the data we studied (Part 2) and the tools we tested hands-on (Part 3).</p>
+
+    <div class="mt-10 grid gap-10 lg:grid-cols-2">
+      <ul class="space-y-5">
+        {activities.map((a) => (
+          <li>
+            <div class="mb-2 flex items-baseline justify-between gap-4">
+              <span class="font-label text-sm font-bold text-ink">{a.type}</span>
+              <span class="font-label text-2xl font-extrabold text-gold">{a.count}</span>
+            </div>
+            <div class="h-2.5 overflow-hidden rounded-full bg-white/6">
+              <div class="inv-bar h-full rounded-full bg-gradient-to-r from-[#2FBF8A] to-cyan" style={`width:${(a.count / maxActivities) * 100}%`}></div>
+            </div>
+            <p class="mt-2 text-sm text-mist">{a.examples}</p>
+          </li>
+        ))}
+      </ul>
+      <div class="space-y-4">
+        <div class="glass p-6">
+          <p class="eyebrow !text-gold mb-2">Key experiment · EX7</p>
+          <p class="text-ink">A teaching A/B test: two groups of at least 15 students — a classic 10-minute lecture video vs the same content with the interactive avatar — then the same 10-question quiz. <span class="text-mist">The first measured evidence of the project’s teaching value.</span></p>
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+          {resources.map((r) => (
+            <div class="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+              <p class="font-label text-xs font-bold tracking-wider text-cyan uppercase">{r.type}</p>
+              <p class="mt-1 text-xs leading-relaxed text-mist">{r.examples}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools tested -->
+    <div id="inv-tools" class="scroll-mt-40 pt-14">
+      <h4 class="font-display text-2xl text-ink md:text-3xl">We tested the tools. <em class="text-gold">None covers everything.</em></h4>
+      <p class="mt-2 max-w-3xl text-mist">26 tools compared on documented evidence (42 references) and 7 tested hands-on. Educational tools have the pedagogy; avatar tools have the face and the voice — never both.</p>
+      <div class="mt-5 mb-4 flex flex-wrap items-center gap-5 font-label text-xs text-mist" aria-hidden="true">
+        <span class="flex items-center gap-2"><span class="cell cell-2"></span> Covered</span>
+        <span class="flex items-center gap-2"><span class="cell cell-1"></span> Partly covered</span>
+        <span class="flex items-center gap-2"><span class="cell cell-0"></span> Not covered</span>
+      </div>
+      <div class="glass overflow-x-auto">
+        <table class="matrix w-full min-w-[56rem] border-collapse text-sm">
+          <caption class="sr-only">Feature coverage of the tested tools (Table 3.5 of the report)</caption>
+          <thead>
+            <tr>
+              <th scope="col" class="p-4 text-left font-label text-xs font-bold tracking-wider text-mist uppercase">Tool</th>
+              {toolMatrix.capabilities.map((c) => <th scope="col" class="w-[10%] p-3 text-center font-label text-[0.7rem] leading-tight font-semibold text-mist">{c}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {toolMatrix.tools.map((t, i) => (
+              <Fragment>
+                {(i === 0 || t.family !== toolMatrix.tools[i - 1].family) && (
+                  <tr>
+                    <th colspan={toolMatrix.capabilities.length + 1} scope="colgroup" class="px-4 pt-5 pb-2 text-left font-label text-[0.68rem] font-bold tracking-[0.2em] uppercase">
+                      <span class={t.family === 'edu' ? 'text-cyan' : 'text-gold'}>{t.family === 'edu' ? 'Educational tools' : 'Digital-human (avatar) tools'}</span>
+                    </th>
+                  </tr>
+                )}
+                <tr class="tool-row border-t border-white/6">
+                  <th scope="row" class="p-4 text-left font-semibold whitespace-nowrap text-ink">{t.name}</th>
+                  {t.v.map((v, j) => (
+                    <td class="p-3 text-center">
+                      <span class:list={['cell', `cell-${v}`]} title={`${t.name} — ${toolMatrix.capabilities[j]}: ${cellLabel[v]}`}></span>
+                      <span class="sr-only">{cellLabel[v]}</span>
+                    </td>
+                  ))}
+                </tr>
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-5 max-w-3xl rounded-2xl border-l-4 border-gold bg-gold/8 p-5 text-ink">
+        <strong>Reading:</strong> no tested tool covers every column. During testing, an interactive “Einstein” agent was even created on D-ID without any authorisation step.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 03 · ANALYSIS & SYNTHESIS ============ -->
+  <section id="inv-analysis" class="scroll-mt-40 pt-20" aria-labelledby="inv-analysis-title">
+    <p class="eyebrow mb-3">Investigate · Step 03</p>
+    <h3 id="inv-analysis-title" class="title-serif text-3xl md:text-5xl">Analysis <em>& synthesis.</em></h3>
+    <p class="lead mt-4 max-w-3xl">What the evidence says — figures, legal and ethical limits, and the conclusions we draw for the Act phase (Parts 5 and 6).</p>
+
+    <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {keyFigures.map((f) => (
+        <figure class="stat-card flex flex-col pt-12">
+          <p class:list={['font-label text-5xl font-extrabold tracking-tight', accent[f.accent]]}>{f.value}</p>
+          <figcaption class="mt-4 leading-snug text-ink/85">{f.label}</figcaption>
+          <p class="mt-auto pt-5 font-label text-[0.68rem] tracking-[0.14em] text-mist uppercase">Source · {f.source}</p>
+        </figure>
+      ))}
+    </div>
+
+    <div id="inv-law" class="scroll-mt-40 pt-14">
+      <h4 class="font-display text-2xl text-ink md:text-3xl">Trust is a <em class="text-gold">design requirement.</em></h4>
+      <p class="mt-2 max-w-3xl text-mist">The biggest ethical risk is not a wrong fact but a convincing face saying it. These rules shape the solution from the start.</p>
+      <ul class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {legal.map((l) => (
+          <li class="glass glass-hover p-6">
+            <span class="mb-4 flex size-11 items-center justify-center rounded-2xl border border-cyan/30 bg-cyan/10 text-cyan"><Icon name="shield" class="size-5" /></span>
+            <p class="font-display text-xl text-ink">{l.title}</p>
+            <p class="mt-1 font-label text-[0.68rem] font-semibold tracking-wider text-gold uppercase">{l.rule}</p>
+            <p class="mt-3 text-sm text-mist">{l.text}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-6 max-w-3xl text-sm text-mist">
+        <strong class="text-ink">Market:</strong> live avatar time costs about $21 an hour (Tavus), while a private tutoring hour in Tunisia costs 15–20 TND (FTDES 2023). Institutional licences and a low-bandwidth voice mode would have to carry most usage.
+      </p>
+    </div>
+
+    <div class="on-cream mt-14 rounded-[2rem] p-7 md:p-10">
+      <p class="eyebrow mb-3">Part 6 · Synthesis</p>
+      <h4 class="title-serif text-3xl md:text-4xl">Four themes, <em>six conclusions.</em></h4>
+      <ul class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {themes.map((t) => (
+          <li class="rounded-3xl border border-navy/12 bg-white/60 p-5">
+            <p class="font-label text-xs font-bold tracking-[0.2em] text-gold-deep uppercase">Theme {t.n}</p>
+            <p class="mt-2 font-display text-lg text-navy">{t.title}</p>
+            <p class="mt-2 text-sm text-navy/75">{t.text}</p>
+          </li>
+        ))}
+      </ul>
+      <ol class="mt-10 grid gap-x-10 gap-y-6 md:grid-cols-2">
+        {conclusions.map((c, i) => (
+          <li class="flex gap-4">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy font-label text-sm font-bold text-gold">{i + 1}</span>
+            <p class="text-navy/80"><strong class="font-display text-lg font-semibold text-navy">{c.title}</strong> {c.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <figure class="mt-10 rounded-[2rem] border-l-4 border-[#F0609E] bg-white/4 p-7 md:p-10">
+      <p class="eyebrow mb-4 !text-[#FF8DBD]">Global paragraph</p>
+      <blockquote class="font-quote text-lg leading-relaxed text-ink md:text-xl">{globalParagraph}</blockquote>
+      <figcaption class="mt-5 font-label text-xs text-mist">Abridged from Part 6 · all figures sourced in Parts 2 to 5 of the report</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ OBJECTIVE TREE ============ -->
+  <section id="inv-tree" class="scroll-mt-40 pt-20" aria-labelledby="inv-tree-title">
+    <div class="mx-auto mb-10 max-w-3xl text-center">
+      <p class="eyebrow mb-3">Part 6 · Objective tree</p>
+      <h3 id="inv-tree-title" class="title-serif text-3xl md:text-5xl">From six modules <em>to one goal.</em></h3>
+      <p class="lead mt-4">Read bottom-up: six enablers support six multimodal deep learning modules, which form three pillars that deliver the main objective. Open a module to see its specific objectives.</p>
+    </div>
+
+    <div class="mx-auto max-w-6xl">
+      <div class="mx-auto max-w-3xl rounded-2xl border border-white/15 bg-white/4 p-5 text-center">
+        <p class="font-label text-[0.68rem] font-bold tracking-[0.25em] text-mist uppercase">Overall goal · Impact</p>
+        <p class="mt-1 font-display text-xl text-ink">{objectiveTree.goal}</p>
+      </div>
+      <div class="tree-link" aria-hidden="true"></div>
+      <div class="mx-auto max-w-4xl rounded-2xl bg-navy p-6 text-center shadow-[0_20px_60px_-25px_rgb(232_169_58/0.6)] ring-1 ring-gold/50">
+        <p class="font-label text-[0.68rem] font-bold tracking-[0.25em] text-gold uppercase">Main objective</p>
+        <p class="mt-1 font-display text-2xl text-ink">{objectiveTree.main}</p>
+      </div>
+      <div class="tree-link" aria-hidden="true"></div>
+      <div class="grid gap-3 sm:grid-cols-3">
+        {objectiveTree.pillars.map((p, i) => (
+          <div class="rounded-2xl border border-white/15 bg-white/4 p-4 text-center">
+            <p class="font-label text-[0.65rem] font-bold tracking-[0.25em] text-mist uppercase">Pillar {i + 1}</p>
+            <p class="mt-1 font-display text-lg text-ink">{p}</p>
+          </div>
+        ))}
+      </div>
+      <div class="tree-link" aria-hidden="true"></div>
+
+      <ul class="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {objectiveTree.modules.map((m) => (
+          <li>
+            <details class="module group rounded-[1.5rem] border bg-white/[0.03] transition" style={`--mc:${m.color}; border-color:${m.color}55`}>
+              <summary class="flex cursor-pointer list-none items-start gap-4 p-5">
+                <span class="flex size-11 shrink-0 items-center justify-center rounded-full font-label text-sm font-extrabold text-navy" style={`background:${m.color}`}>{m.n}</span>
+                <span class="min-w-0 flex-1">
+                  <span class="flex flex-wrap items-center gap-2">
+                    <span class="font-display text-xl text-ink">{m.title}</span>
+                    {m.beyond && <span class="rounded-full border px-2 py-0.5 font-label text-[0.6rem] font-bold tracking-wider uppercase" style={`color:${m.color}; border-color:${m.color}`}>Beyond BEAI</span>}
+                  </span>
+                  <span class="mt-0.5 block font-label text-xs text-mist">{m.io}</span>
+                  <span class="mt-2 block text-sm font-semibold" style={`color:${m.color}`}>Solves: {m.solves}</span>
+                </span>
+                <span class="mt-1 flex size-7 shrink-0 items-center justify-center rounded-full border border-white/15 text-mist transition group-open:rotate-45" aria-hidden="true">+</span>
+              </summary>
+              <div class="px-5 pb-5">
+                <ul class="space-y-1.5 border-t border-white/8 pt-4 text-sm text-ink/90">
+                  {m.objectives.map((o) => <li class="flex gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full" style={`background:${m.color}`}></span>{o}</li>)}
+                </ul>
+                <p class="mt-4 font-label text-[0.7rem] text-mist">Candidate models · {m.models}</p>
+              </div>
+            </details>
+          </li>
+        ))}
+      </ul>
+
+      <div class="tree-link" aria-hidden="true"></div>
+      <div class="rounded-[1.75rem] border border-white/10 bg-night/60 p-5">
+        <p class="mb-4 text-center font-label text-[0.68rem] font-bold tracking-[0.25em] text-mist uppercase">Cross-cutting enablers · Foundation</p>
+        <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {objectiveTree.enablers.map((e) => <li class="rounded-full border border-white/12 bg-white/4 px-4 py-2 text-center text-sm font-semibold text-ink">{e}</li>)}
+        </ul>
+      </div>
+      <p class="mt-5 text-center text-xs text-mist">“Beyond BEAI” = our extension of the BEAI™ Studio reference platform. Module 5 never analyses students’ faces (EU AI Act, Art. 5).</p>
+    </div>
+  </section>
+
+  <!-- ============ NEXT STEPS ============ -->
+  <section id="inv-next" class="scroll-mt-40 pt-20" aria-labelledby="inv-next-title">
+    <p class="eyebrow mb-3">What comes next</p>
+    <h3 id="inv-next-title" class="title-serif text-3xl md:text-5xl">From desk research <em>to field work.</em></h3>
+    <p class="lead mt-4 max-w-3xl">The pending questions need measurements: the student survey, interviews and experiments EX1–EX7. Proposed schedule — to be aligned with the official presentation date.</p>
+    <ol class="mt-10 grid gap-5 md:grid-cols-4">
+      {nextSteps.map((s, i) => (
+        <li class="glass p-6">
+          <span class="font-label text-5xl font-extrabold text-white/10">0{i + 1}</span>
+          <p class="mt-1 font-label text-sm font-bold text-gold">{s.week}</p>
+          <p class="mt-2 text-sm text-mist">{s.text}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+</div>
+
+<style>
+  .inv-chip.is-active { background: var(--color-ink); color: var(--color-navy); }
+
+  .cell { display: inline-block; width: 1.1rem; height: 1.1rem; border-radius: 9999px; vertical-align: middle; }
+  .cell-2 { background: var(--color-cyan); box-shadow: 0 0 12px rgb(92 225 230 / 0.6); }
+  .cell-1 { background: linear-gradient(90deg, var(--color-gold) 50%, transparent 50%); border: 2px solid var(--color-gold); }
+  .cell-0 { border: 2px solid rgb(255 154 92 / 0.6); }
+  .matrix .tool-row { transition: background-color 0.2s; }
+  .matrix .tool-row:hover { background: rgb(255 255 255 / 0.04); }
+
+  .tree-link { width: 2px; height: 2rem; margin: 0.25rem auto; background: linear-gradient(var(--color-gold), rgb(92 225 230 / 0.6)); border-radius: 2px; }
+  .module[open] { background: color-mix(in srgb, var(--mc) 10%, transparent); box-shadow: 0 20px 50px -30px var(--mc); }
+  .module summary::-webkit-details-marker { display: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .inv-bar { animation: invBar 1.2s var(--ease-out-expo) both; transform-origin: left; }
+    @keyframes invBar { from { transform: scaleX(0); } }
+  }
+</style>
+
+<script>
+  // Highlight the step being read in the sticky step navigation.
+  // Elements are looked up on each call: this content lives inside a React island.
+  const setActive = () => {
+    const chips = [...document.querySelectorAll<HTMLAnchorElement>('[data-inv-step]')];
+    let current = '';
+    for (const c of chips) {
+      const s = document.getElementById(c.dataset.invStep!);
+      if (s && s.offsetParent !== null && s.getBoundingClientRect().top < window.innerHeight * 0.35) current = s.id;
+    }
+    chips.forEach((c) => {
+      const on = c.dataset.invStep === current;
+      c.classList.toggle('is-active', on);
+      if (on && c.getAttribute('aria-current') !== 'true') {
+        c.setAttribute('aria-current', 'true');
+        const bar = c.closest('ul')!;
+        bar.scrollTo({ left: c.offsetLeft - bar.clientWidth / 2 + c.offsetWidth / 2, behavior: 'smooth' });
+      }
+      if (!on) c.removeAttribute('aria-current');
+    });
+  };
+  setActive();
+  window.addEventListener('scroll', () => requestAnimationFrame(setActive), { passive: true });
+</script>

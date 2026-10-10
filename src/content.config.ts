@@ -44,6 +44,8 @@ const team = defineCollection({
       order: z.number().default(99),
       photo: image(),
       role: z.string().optional(),
+      /** Part led in the Investigate phase report, e.g. 'Part 2 · Data Study' */
+      investigate: z.string().optional(),
       linkedin: z.url().optional(),
       github: z.url().optional(),
       email: z.email().optional(),

@@ -17,6 +17,8 @@ export const site = {
   description:
     'A deep learning, multimodal, generative AI project that brings 3D avatars of professors, thinkers and great minds — with their voice — to every learner, wherever and whenever they want.',
   course: 'Deep Learning Project — Challenge Based Learning (CBL)',
+  level: '4th year · Artificial Intelligence',
+  referencePlatform: 'BEAI™ Studio — Agent & Digital-Twin Creation Platform (partner: Fawzi Ben Messaoud)',
   university: 'ESPRIT — Honoris United Universities',
   partner: 'Indiana University (potential partner)',
   supervisors: ['Mr. Safouane Jebali', 'Mrs. Wided Askri'],

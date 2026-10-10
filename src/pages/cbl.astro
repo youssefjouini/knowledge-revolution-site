@@ -4,6 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHeader from '@/components/ui/PageHeader.astro';
 import SectionTitle from '@/components/ui/SectionTitle.astro';
 import CblJourney, { type CblData } from '@/components/features/CblJourney';
+import InvestigateReport from '@/components/features/InvestigateReport.astro';
 import { engage, investigate, act } from '@/data/cbl';
 import { cblPhases } from '@/data/site';
 
@@ -69,7 +70,9 @@ const phases = [
   <section class="border-y border-white/6 bg-night/40 py-24 md:py-32">
     <div class="container-page">
       <SectionTitle eyebrow="Interactive journey" title="Follow our path" accent="phase by phase." lead="Select a phase to explore it. Engage is complete, Investigate is under way — Act unlocks next." />
-      <CblJourney client:visible data={data} />
+      <CblJourney client:visible data={data}>
+        <InvestigateReport slot="investigate" />
+      </CblJourney>
     </div>
   </section>
 
@@ -121,6 +124,8 @@ const phases = [
     .cbl-orbit { animation: cblSpin 60s linear infinite; }
     @keyframes cblSpin { to { transform: rotate(360deg); } }
     .cbl-fade { animation: cblFade 0.6s var(--ease-out-expo); }
+    .cbl-panel { animation: cblPanel 0.6s var(--ease-out-expo); }
+    @keyframes cblPanel { from { opacity: 0; transform: translateY(14px); } }
 
     /* Engage tree: root → trunk → branches → nodes */
     .cbl-tree .tree-root { animation: treeRoot 0.5s var(--ease-out-expo) both; }

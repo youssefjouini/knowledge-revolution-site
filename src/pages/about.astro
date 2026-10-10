@@ -5,7 +5,6 @@ import PageHeader from '@/components/ui/PageHeader.astro';
 import SectionTitle from '@/components/ui/SectionTitle.astro';
 import Promises from '@/components/ui/Promises.astro';
 import Icon from '@/components/ui/Icon.astro';
-import Todo from '@/components/ui/Todo.astro';
 import { site, challenge, essentialQuestion } from '@/data/site';
 
 import p1 from '@/assets/images/problem/04-attended-couldnt-ask.jpg';
@@ -72,10 +71,11 @@ const approach = [
       </div>
       <dl class="glass grid gap-5 p-7 text-sm" data-reveal>
         <div><dt class="eyebrow !text-gold mb-1">Team</dt><dd class="text-ink">{site.team} — {site.teamLong}</dd></div>
-        <div><dt class="eyebrow !text-gold mb-1">Course</dt><dd class="text-ink">{site.course}</dd></div>
+        <div><dt class="eyebrow !text-gold mb-1">Course</dt><dd class="text-ink">{site.course} · {site.level}</dd></div>
         <div><dt class="eyebrow !text-gold mb-1">University</dt><dd class="text-ink">{site.university}</dd></div>
         <div><dt class="eyebrow !text-gold mb-1">Supervisors</dt><dd class="text-ink">{site.supervisors.join(' · ')}</dd></div>
         <div><dt class="eyebrow !text-gold mb-1">Potential partner</dt><dd class="text-ink">Indiana University</dd></div>
+        <div><dt class="eyebrow !text-gold mb-1">Reference platform</dt><dd class="text-ink">{site.referencePlatform}</dd></div>
         <div><dt class="eyebrow !text-gold mb-1">Current phase</dt><dd class="text-ink">Engage completed → {site.currentPhase}</dd></div>
       </dl>
     </div>
@@ -156,7 +156,7 @@ const approach = [
       ))}
     </ul>
     <div class="mt-10 flex flex-wrap items-center gap-4" data-reveal>
-      <Todo>Detailed technical approach — to be written during the Investigate phase.</Todo>
+      <a href="/cbl#investigate-report" class="btn-gold">What our Investigate phase revealed <Icon name="arrow-right" class="size-4" /></a>
       <a href="/methodology" class="inline-flex items-center gap-2 font-label text-sm font-semibold text-gold hover:text-gold-soft">AI & Methodology <Icon name="arrow-right" class="size-4" /></a>
     </div>
   </section>
